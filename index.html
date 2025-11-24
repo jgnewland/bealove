@@ -10,7 +10,7 @@
       --bg: #f5f5f7;
       --bg-soft: #ffffff;
       --primary: #000000;
-      --accent: #000000;       /* nero per bottoni, header, ecc. */
+      --accent: #000000;       /* nero */
       --accent-alt: #b75865;   /* rosa bealove */
       --text: #000000;
       --muted: #6b7280;
@@ -62,7 +62,7 @@
       margin: 0 auto;
     }
 
-    /* HEADER TOP BAR */
+    /* TOP BAR */
     .top-bar {
       background: var(--accent);
       color: #f9fafb;
@@ -71,7 +71,7 @@
       text-align: center;
     }
 
-    /* MAIN HEADER */
+    /* HEADER */
     header {
       background: #ffffff;
       border-bottom: 1px solid #e5e7eb;
@@ -95,7 +95,7 @@
     }
 
     .logo img {
-      height: 100px;
+      height: 38px;
       width: auto;
       display: block;
     }
@@ -127,7 +127,6 @@
       width: 100%;
     }
 
-    /* SEARCH + ICONS */
     .header-right {
       display: flex;
       align-items: center;
@@ -193,7 +192,7 @@
       text-align: center;
     }
 
-    /* HERO BANNER */
+    /* HERO */
     .hero {
       background: linear-gradient(135deg, #e5e7eb, #f9fafb);
       margin: 10px 0 0;
@@ -314,7 +313,7 @@
       border: 1px solid var(--accent-alt);
     }
 
-    /* FILTER BAR */
+    /* FILTRI */
     .filters {
       background: #ffffff;
       border-bottom: 1px solid #e5e7eb;
@@ -365,7 +364,7 @@
       color: #6b7280;
     }
 
-    /* PRODUCTS GRID */
+    /* GRID PRODOTTI */
     .content {
       flex: 1;
       padding: 18px 0 30px;
@@ -373,21 +372,11 @@
 
     .products-grid {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 16px;
     }
 
-    @media (max-width: 1024px) {
-      .products-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 768px) {
-      .nav-main {
-        display: none;
-      }
-
+    @media (max-width: 900px) {
       .products-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
@@ -516,7 +505,7 @@
       text-underline-offset: 2px;
     }
 
-    /* CART PANEL */
+    /* CARRELLO */
     .cart-panel-backdrop {
       position: fixed;
       inset: 0;
@@ -682,12 +671,10 @@
 </head>
 <body>
 <div class="page">
-  <!-- TOP BAR -->
   <div class="top-bar">
     bealove – be a love. · Spedizione gratuita sopra i 49€ · Resi entro 30 giorni
   </div>
 
-  <!-- HEADER -->
   <header>
     <div class="container header-inner">
       <div class="logo">
@@ -709,9 +696,7 @@
           <span>🔍</span>
         </div>
         <div class="header-icons">
-          <button class="icon-btn" title="Profilo">
-            👤
-          </button>
+          <button class="icon-btn" title="Profilo">👤</button>
           <button class="icon-btn" id="cartButton" title="Carrello">
             🛒
             <span class="cart-count" id="cartCount">0</span>
@@ -721,49 +706,45 @@
     </div>
   </header>
 
-  <!-- HERO -->
   <section class="hero">
     <div class="container hero-inner">
       <div>
         <div class="hero-badge">
-          bealove · nuova collezione casa
+          bealove · collezione Natale
         </div>
-        <h1 class="hero-title">Materiale per la casa che ti fa dire: be a love.</h1>
+        <h1 class="hero-title">Natale in casa bealove: cuscini, coperte e biancheria cozy.</h1>
         <p class="hero-text">
-          Accessori, tessili e decorazioni per soggiorno, cucina, camera e bagno.
-          Stile semplice, prezzi accessibili, atmosfera da boutique nordica.
+          Una mini selezione di tessili natalizi per trasformare il tuo soggiorno e la tua camera
+          con poco budget e tanto amore.
         </p>
         <div class="hero-actions">
           <button class="btn-primary" onclick="scrollToProducts()">
-            Guarda tutti i prodotti
+            Scopri i prodotti
           </button>
           <button class="btn-secondary" onclick="scrollToProducts('living')">
             Solo soggiorno
           </button>
         </div>
         <div class="hero-note">
-          Pagamenti sicuri con Stripe · Modello dropshipping · bealove.it
+          Pagamenti sicuri con Stripe (in arrivo) · bealove.it
         </div>
       </div>
 
       <div class="hero-banner">
-        <h3>Cosa rende diverso bealove?</h3>
+        <h3>Cosa trovi qui?</h3>
         <p>
-          Il sito è leggero e ospitato su GitHub Pages, il pagamento passa da Stripe
-          e tu gestisci solo selezione prodotti e comunicazione. Nessun magazzino,
-          solo cura per la casa.
+          Una vetrina essenziale collegata al tuo magazzino: ogni prodotto ha un codice,
+          un prezzo e un link esterno (per ora Sinsay, in futuro Stripe).
         </p>
         <div class="hero-banner-tags">
+          <span class="tag-pill">Natale</span>
+          <span class="tag-pill">Tessili</span>
           <span class="tag-pill">be a love.</span>
-          <span class="tag-pill">bealove.it</span>
-          <span class="tag-pill">Stripe Payment Link</span>
-          <span class="tag-pill">Nessun backend</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FILTRI -->
   <section id="prodotti" class="filters">
     <div class="container filters-inner">
       <div class="filters-left">
@@ -784,33 +765,27 @@
     </div>
   </section>
 
-  <!-- PRODOTTI -->
   <main class="content">
     <div class="container">
-      <div class="products-grid" id="productsGrid">
-        <!-- I prodotti vengono inseriti qui via JS -->
-      </div>
+      <div class="products-grid" id="productsGrid"></div>
     </div>
   </main>
 
-  <!-- CARRELLO LATERALE -->
   <div class="cart-panel-backdrop" id="cartBackdrop">
     <aside class="cart-panel">
       <div class="cart-header">
         <div class="cart-title">Carrello bealove</div>
         <button class="cart-close-btn" id="cartCloseBtn" aria-label="Chiudi carrello">✕</button>
       </div>
-      <div class="cart-body" id="cartBody">
-        <!-- elementi carrello -->
-      </div>
+      <div class="cart-body" id="cartBody"></div>
       <div class="cart-footer">
         <div class="cart-total-line">
           <span>Totale provvisorio</span>
           <span id="cartTotal">€ 0,00</span>
         </div>
         <div class="cart-note">
-          Collega questo pulsante a un <strong>Payment Link Stripe</strong> per il checkout
-          completo di bealove.
+          In questa fase, il pulsante può portare a un Payment Link Stripe generale,
+          oppure restare informativo.
         </div>
         <button class="btn-checkout" id="checkoutBtn" onclick="goToStripeCheckout()">
           Procedi al pagamento
@@ -819,122 +794,60 @@
     </aside>
   </div>
 
-  <!-- FOOTER -->
   <footer>
     <div class="container footer-inner">
       <span>© <span id="year"></span> bealove · bealove.it · be a love.</span>
-      <span>Ospitato su GitHub Pages · Pagamenti con Stripe</span>
+      <span>Ospitato su GitHub Pages · Pagamenti con Stripe (in arrivo)</span>
     </div>
   </footer>
 </div>
 
 <script>
-  // === INVENTARIO MAGAZZINO BEALOVE ===
-  // Aggiungi qui i tuoi prodotti, ognuno con un CODICE (sku)
-  // e imposta inShowcase: true/false per decidere se va in vetrina.
+  // === MAGAZZINO BEALOVE: PRODOTTI CON CODICI ===
   const INVENTARIO = [
     {
       sku: "BL001",
-      id: "BL001", // usato internamente dal carrello
-      name: "Cesto portaoggetti in corda naturale",
+      id: "BL001",
+      name: "Cuscino decorativo con motivo natalizio",
       category: "living",
       categoryLabel: "Soggiorno",
-      price: 29.9,
-      oldPrice: 34.9,
-      tag: "Novità",
-      stripeUrl: "#",
-      imageUrl: "", // es: "img/cesto-corda.jpg"
+      price: 7.99,          // prezzo BeaLove (puoi cambiarlo)
+      oldPrice: null,
+      tag: "Natale",
+      // Link pagina prodotto esterna (per ora Sinsay)
+      stripeUrl: "https://www.sinsay.com/it/it/cuscino-decorativo-con-motivo-natalizio-023gi-80x",
+      // Immagine di esempio
+      imageUrl: "https://static.sinsay.com/media/catalog/product/cache/850/a4e40ebdc3e371adff845072e1c73f37/0/2/023GI-80X-001-1-1109046.jpg",
+      labelType: "default",
       inShowcase: true
     },
     {
       sku: "BL002",
       id: "BL002",
-      name: "Set 3 barattoli ermetici da cucina",
-      category: "kitchen",
-      categoryLabel: "Cucina",
-      price: 24.5,
+      name: "Completo di biancheria da letto natalizia",
+      category: "bedroom",
+      categoryLabel: "Camera da letto",
+      price: 24.99,
       oldPrice: null,
-      tag: "Best seller",
-      stripeUrl: "#",
-      imageUrl: "",
+      tag: "Natale",
+      stripeUrl: "https://www.sinsay.com/it/it/completo-di-biancheria-da-letto-natalizia-108ii-mlc",
+      // immagine generica natalizia (puoi sostituirla con quella giusta)
+      imageUrl: "https://static.sinsay.com/media/catalog/product/cache/850/a4e40ebdc3e371adff845072e1c73f37/2/6/265II-08X-001-1-1099678_1.jpg",
+      labelType: "default",
       inShowcase: true
     },
     {
       sku: "BL003",
       id: "BL003",
-      name: "Lampada da comodino in lino",
-      category: "bedroom",
-      categoryLabel: "Camera da letto",
-      price: 39.0,
-      oldPrice: 49.0,
-      tag: "-20%",
-      stripeUrl: "#",
-      imageUrl: "",
-      inShowcase: true
-    },
-    {
-      sku: "BL004",
-      id: "BL004",
-      name: "Set 4 asciugamani in cotone morbido",
-      category: "bathroom",
-      categoryLabel: "Bagno",
-      price: 35.0,
-      oldPrice: null,
-      tag: "Soft touch",
-      stripeUrl: "#",
-      imageUrl: "",
-      inShowcase: true
-    },
-    {
-      sku: "BL005",
-      id: "BL005",
-      name: "Tovaglia in lino effetto stone washed",
-      category: "kitchen",
-      categoryLabel: "Cucina",
-      price: 44.9,
-      oldPrice: null,
-      tag: "Nuovo",
-      stripeUrl: "#",
-      imageUrl: "",
-      inShowcase: false // NON in vetrina per ora
-    },
-    {
-      sku: "BL006",
-      id: "BL006",
-      name: "Coperta morbidissima per divano",
+      name: "Coperta natalizia con motivo pan di zenzero",
       category: "living",
       categoryLabel: "Soggiorno",
-      price: 49.0,
-      oldPrice: 59.0,
-      tag: "-17%",
-      stripeUrl: "#",
-      imageUrl: "",
-      inShowcase: true
-    },
-    {
-      sku: "BL007",
-      id: "BL007",
-      name: "Set 2 federe cuscino in cotone",
-      category: "bedroom",
-      categoryLabel: "Camera da letto",
-      price: 19.9,
+      price: 19.99,
       oldPrice: null,
-      tag: "Essenziale",
-      stripeUrl: "#",
-      imageUrl: "",
-      inShowcase: false
-    },
-    {
-      sku: "BL008",
-      id: "BL008",
-      name: "Tappetino bagno antiscivolo",
-      category: "bathroom",
-      categoryLabel: "Bagno",
-      price: 17.5,
-      oldPrice: null,
-      tag: "Daily",
-      stripeUrl: "#",
-      imageUrl: "",
+      tag: "Natale",
+      stripeUrl: "https://www.sinsay.com/it/it/coperta-natalizia-con-motivo-pan-di-zenzero-416gh-01p",
+      imageUrl: "https://static.sinsay.com/media/catalog/product/cache/850/a4e40ebdc3e371adff845072e1c73f37/4/1/416GH-77P-001-1-1090411_5.jpg",
+      labelType: "default",
       inShowcase: true
     }
   ];
@@ -957,7 +870,6 @@
     renderProducts();
   }
 
-  // Prodotti che vanno in vetrina (solo quelli con inShowcase = true)
   function prodottiInVetrina() {
     return INVENTARIO.filter(p => p.inShowcase);
   }
@@ -966,21 +878,18 @@
     let list = prodottiInVetrina().filter(p => {
       if (currentFilter !== "all" && p.category !== currentFilter) return false;
       if (currentSearch) {
-        const query = currentSearch.toLowerCase();
+        const q = currentSearch.toLowerCase();
         return (
-          p.name.toLowerCase().includes(query) ||
-          p.categoryLabel.toLowerCase().includes(query) ||
-          p.sku.toLowerCase().includes(query)
+          p.name.toLowerCase().includes(q) ||
+          p.categoryLabel.toLowerCase().includes(q) ||
+          p.sku.toLowerCase().includes(q)
         );
       }
       return true;
     });
 
-    if (currentSort === "price-asc") {
-      list.sort((a, b) => a.price - b.price);
-    } else if (currentSort === "price-desc") {
-      list.sort((a, b) => b.price - a.price);
-    }
+    if (currentSort === "price-asc") list.sort((a,b) => a.price - b.price);
+    else if (currentSort === "price-desc") list.sort((a,b) => b.price - a.price);
 
     return list;
   }
@@ -994,7 +903,6 @@
     products.forEach(prod => {
       const card = document.createElement("article");
       card.className = "product-card";
-
       const hasImage = prod.imageUrl && prod.imageUrl.trim() !== "";
 
       card.innerHTML = `
@@ -1017,7 +925,7 @@
             </button>
           </div>
           <a class="buy-now" href="${prod.stripeUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation();">
-            Acquista ora con Stripe
+            Vai alla scheda prodotto
           </a>
         </div>
       `;
@@ -1034,7 +942,6 @@
     });
   }
 
-  // === CARRELLO ===
   function findCartItem(sku) {
     return cart.find(item => item.sku === sku);
   }
@@ -1045,11 +952,8 @@
 
   function addToCart(sku) {
     const existing = findCartItem(sku);
-    if (existing) {
-      existing.qty += 1;
-    } else {
-      cart.push({ sku, qty: 1 });
-    }
+    if (existing) existing.qty += 1;
+    else cart.push({ sku, qty: 1 });
     updateCartCount();
     renderCart();
   }
@@ -1058,9 +962,7 @@
     const item = findCartItem(sku);
     if (!item) return;
     item.qty += delta;
-    if (item.qty <= 0) {
-      cart = cart.filter(i => i.sku !== sku);
-    }
+    if (item.qty <= 0) cart = cart.filter(i => i.sku !== sku);
     updateCartCount();
     renderCart();
   }
@@ -1127,7 +1029,7 @@
   }
 
   function goToStripeCheckout() {
-    const stripeLink = "#"; // <-- qui il tuo Payment Link Stripe generale
+    const stripeLink = "#"; // qui metterai il tuo Payment Link Stripe generale
     if (stripeLink === "#") {
       alert("Collega qui il tuo Payment Link Stripe per il pagamento dell'ordine bealove.");
       return;
@@ -1159,9 +1061,7 @@
     document.getElementById("cartButton").addEventListener("click", openCart);
     document.getElementById("cartCloseBtn").addEventListener("click", closeCart);
     document.getElementById("cartBackdrop").addEventListener("click", (e) => {
-      if (e.target.id === "cartBackdrop") {
-        closeCart();
-      }
+      if (e.target.id === "cartBackdrop") closeCart();
     });
 
     renderProducts();
