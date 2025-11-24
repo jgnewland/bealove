@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>bealove – scheda prodotto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --bg: #f5f5f7;
+      --primary: #000000;
+      --accent: #000000;
+      --accent-alt: #b75865;
+      --text: #000000;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --shadow-soft: 0 15px 35px rgba(0,0,0,0.08);
+      --radius-lg: 18px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    img { max-width: 100%; display: block; }
+    a { color: inherit; text-decoration: none; }
+    button { font-family: inherit; cursor: pointer; }
+
+    .page { min-height: 100vh; display: flex; flex-direction: column; }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+
+    /* HEADER */
+    header {
+      background: #fff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+    }
+    .logo img { height: 34px; }
+    .header-right { font-size: 0.85rem; color: var(--muted); }
+
+    /* MAIN LAYOUT */
+    main { flex: 1; padding: 20px 0 30px; }
+    .breadcrumbs {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+    .breadcrumbs a { text-decoration: underline; text-underline-offset: 2px; }
+
+    .product-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: 24px;
+      align-items: flex-start;
+    }
+    @media (max-width: 800px) {
+      .product-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .product-gallery {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 12px;
+    }
+    .product-main-image {
+      border-radius: 16px;
+      overflow: hidden;
+      background: #e5e7eb;
+      aspect-ratio: 3/4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .product-info {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 18px;
+      display: grid;
+      gap: 10px;
+    }
+    .product-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      border-radius: 999px;
+      border: 1px solid var(--accent-alt);
+      padding: 3px 10px;
+      color: var(--accent-alt);
+    }
+    .product-name {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+    .product-sku {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    .product-category {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .product-price-line {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .product-price {
+      font-size: 1.3rem;
+      font-weight: 700;
+    }
+    .product-oldprice {
+      font-size: 0.9rem;
+      text-decoration: line-through;
+      color: #9ca3af;
+    }
+
+    .product-desc {
+      font-size: 0.9rem;
+      color: #374151;
+      margin-top: 6px;
+    }
+
+    .product-actions {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .btn-secondary {
+      background: #fff;
+      color: var(--accent);
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 7px 16px;
+      font-size: 0.85rem;
+    }
+    .note-small {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      background: #fff;
+      font-size: 0.8rem;
+      color: var(--muted);
+      padding: 14px 0 20px;
+      margin-top: auto;
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .error-box {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-soft);
+      padding: 20px;
+      text-align: center;
+      margin-top: 30px;
+      font-size: 0.95rem;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="container header-inner">
+      <div class="logo">
+        <a href="index.html" aria-label="Torna alla home di bealove">
+          <img src="https://grandangolosettimanale.it/Black%20White%20Minimal%20Modern%20Simple%20Bold%20Business%20Mag%20Logo.png" alt="bealove logo">
+        </a>
+      </div>
+      <div class="header-right">
+        bealove · scheda prodotto
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container" id="productContainer">
+      <!-- Qui JS inserisce la scheda prodotto -->
+    </div>
+  </main>
+
+  <footer>
+    <div class="container footer-inner">
+      <span>© <span id="year"></span> bealove · bealove.it · be a love.</span>
+      <span>Ospitato su GitHub Pages · Pagamenti con Stripe (in arrivo)</span>
+    </div>
+  </footer>
+</div>
+
+<script>
+  // Copia RIDOTTA del magazzino. Se vuoi, poi lo metti in un file JS unico.
+  const INVENTARIO = [
+    {
+      sku: "BL001",
+      id: "BL001",
+      name: "Cuscino decorativo con motivo natalizio",
+      category: "living",
+      categoryLabel: "Soggiorno",
+      price: 7.99,
+      oldPrice: null,
+      tag: "Natale",
+      stripeUrl: "https://www.sinsay.com/it/it/cuscino-decorativo-con-motivo-natalizio-023gi-80x",
+      imageUrl: "https://static.sinsay.com/media/catalog/product/cache/850/a4e40ebdc3e371adff845072e1c73f37/0/2/023GI-80X-001-1-1109046.jpg",
+      labelType: "default",
+      inShowcase: true
+    },
+    {
+      sku: "BL002",
+      id: "BL002",
+      name: "Completo di biancheria da letto natalizia",
+      category: "bedroom",
+      categoryLabel: "Camera da letto",
+      price: 24.99,
+      oldPrice: null,
+      tag: "Natale",
+      stripeUrl: "https://www.sinsay.com/it/it/completo-di-biancheria-da-letto-natalizia-108ii-mlc",
+      imageUrl: "https://static.sinsay.com/media/catalog/product/cache/850/a4e40ebdc3e371adff845072e1c73f37/2/6/265II-08X-001-1-1099678_1.jpg",
+      labelType: "default",
+      inShowcase: true
+    },
+    {
+      sku: "BL003",
+      id: "BL003",
+      name: "Coperta natalizia con motivo pan di zenzero",
+      category: "living",
+      categoryLabel: "Soggiorno",
+      price: 19.99,
+      oldPrice: null,
+      tag: "Natale",
+      stripeUrl: "https://www.sinsay.com/it/it/coperta-natalizia-con-motivo-pan-di-zenzero-416gh-01p",
+      imageUrl: "https://static.sinsay.com/media/catalog/product/cache/850/a4e40ebdc3e371adff845072e1c73f37/4/1/416GH-77P-001-1-1090411_5.jpg",
+      labelType: "default",
+      inShowcase: true
+    }
+  ];
+
+  function getQueryParam(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+  }
+
+  function formatPrice(value) {
+    return "€ " + value.toFixed(2).replace(".", ",");
+  }
+
+  function renderProductPage() {
+    const container = document.getElementById("productContainer");
+    const sku = getQueryParam("sku");
+
+    if (!sku) {
+      container.innerHTML = `
+        <div class="error-box">
+          Nessun prodotto specificato.<br><br>
+          <a href="index.html">Torna alla vetrina bealove</a>
+        </div>
+      `;
+      return;
+    }
+
+    const product = INVENTARIO.find(p => p.sku === sku);
+
+    if (!product) {
+      container.innerHTML = `
+        <div class="error-box">
+          Prodotto non trovato (codice: ${sku}).<br><br>
+          <a href="index.html">Torna alla vetrina bealove</a>
+        </div>
+      `;
+      return;
+    }
+
+    const hasImage = product.imageUrl && product.imageUrl.trim() !== "";
+    const breadcrumbs = `
+      <div class="breadcrumbs">
+        <a href="index.html">Home</a> ·
+        <a href="index.html#prodotti">Prodotti</a> ·
+        <span>${product.name}</span>
+      </div>
+    `;
+
+    container.innerHTML = `
+      ${breadcrumbs}
+      <div class="product-layout">
+        <section class="product-gallery">
+          <div class="product-main-image">
+            ${hasImage
+              ? `<img src="${product.imageUrl}" alt="${product.name}">`
+              : `<span>Immagine prodotto</span>`}
+          </div>
+        </section>
+
+        <section class="product-info">
+          <div class="product-tag">
+            <span>bealove</span> · <span>${product.tag}</span>
+          </div>
+          <h1 class="product-name">${product.name}</h1>
+          <div class="product-sku">Codice prodotto: ${product.sku}</div>
+          <div class="product-category">Categoria: ${product.categoryLabel}</div>
+
+          <div class="product-price-line">
+            <span class="product-price">${formatPrice(product.price)}</span>
+            ${product.oldPrice ? `<span class="product-oldprice">${formatPrice(product.oldPrice)}</span>` : ""}
+          </div>
+
+          <p class="product-desc">
+            Tessile natalizio selezionato da bealove. Perfetto per creare un'atmosfera calda e accogliente
+            in casa durante le feste. Materiali, colori e stile ispirati alle collezioni nordiche
+            a prezzi accessibili.
+          </p>
+
+          <div class="product-actions">
+            <button class="btn-primary" onclick="vaiAlPagamento('${product.sku}')">
+              Vai alla pagina di pagamento
+            </button>
+            <a href="index.html#prodotti" class="btn-secondary">
+              Torna alla vetrina
+            </a>
+          </div>
+          <div class="note-small">
+            Il pulsante di pagamento porta al link collegato a questo prodotto
+            (ora Sinsay, in futuro Payment Link Stripe dedicato).
+          </div>
+        </section>
+      </div>
+    `;
+  }
+
+  function vaiAlPagamento(sku) {
+    const product = INVENTARIO.find(p => p.sku === sku);
+    if (!product) {
+      alert("Prodotto non trovato.");
+      return;
+    }
+    if (!product.stripeUrl || product.stripeUrl === "#") {
+      alert("Per questo prodotto devi ancora collegare un Payment Link (Stripe o altro).");
+      return;
+    }
+    window.open(product.stripeUrl, "_blank");
+  }
+
+  document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("year").textContent = new Date().getFullYear();
+    renderProductPage();
+  });
+</script>
+</body>
+</html>
