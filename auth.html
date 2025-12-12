@@ -122,7 +122,99 @@
   supabase.auth.onAuthStateChange((event, session) => {
     if (session) showProfile();
   });
-</script>
+<script>
+  const SUPABASE_URL = "https://cjzipuwdviorsqihsmr.supabase.co";
+  const SUPABASE_ANON_KEY = "INCOLLA_QUI_LA_TUA_PUBLISHABLE_KEY"; // sb_publishable_...
 
-</body>
-</html>
+  const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // helpers
+  const $ = (id) => document.getElementById(id);
+
+  function showAuth(){
+    $("auth").classList.remove("hidden");
+    $("profile").classList.add("hidden");
+  }
+  function showProfile(){
+    $("auth").classList.add("hidden");
+    $("profile").classList.remove("hidden");
+  }
+
+  async function signup() {
+    try{
+      const email = $("email").value.trim();
+      const password = $("password").value.trim();
+
+      if(!email) return alert("Inserisci una email");
+      if(password.length < 6) return alert("Password troppo corta (min 6 caratteri)");
+
+      const { data, error } = await supabase.auth.signUp({ email, password });
+      if(error) return alert("Errore registrazione: " + error.message);
+
+      // Se la conferma email è attiva, Supabase NON crea sessione subito
+      if(!data.session){
+        alert("Registrazione fatta ✅\nOra controlla la tua email per confermare l’account, poi fai Login.");
+        return;
+      }
+
+      alert("Registrazione fatta ✅ Sei entrato.");
+      showProfile();
+    } catch(e){
+      alert("Errore: " + e.message);
+    }
+  }
+
+  async function login() {
+    try{
+      const email = $("email").value.trim();
+      const password = $("password").value.trim();
+
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if(error) return alert("Errore login: " + error.message);
+
+      showProfile();
+    } catch(e){
+      alert("Errore: " + e.message);
+    }
+  }
+
+  async function logout() {
+    await supabase.auth.signOut();
+    showAuth();
+  }
+
+  async function saveProfile() {
+    try{
+      const { data: userData, error: userErr } = await supabase.auth.getUser();
+      if(userErr) return alert("Errore utente: " + userErr.message);
+      const user = userData.user;
+      if(!user) return alert("Devi essere loggato.");
+
+      const payload = {
+        id: user.id,
+        username: $("username").value.trim() || null,
+        bio: $("bio").value.trim() || null
+      };
+
+      const { error } = await supabase.from("profiles").upsert(payload);
+      if(error) return alert("Errore salvataggio profilo: " + error.message);
+
+      alert("Profilo salvato ✅");
+    } catch(e){
+      alert("Errore: " + e.message);
+    }
+  }
+
+  // all’avvio: se c’è sessione, mostra profilo
+  (async ()=>{
+    const { data } = await supabase.auth.getSession();
+    if(data.session) showProfile();
+    else showAuth();
+  })();
+
+  // espone le funzioni ai bottoni onclick
+  window.signup = signup;
+  window.login = login;
+  window.logout = logout;
+  window.saveProfile = saveProfile;
+</script>
