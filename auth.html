@@ -1,134 +1,14 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-  <meta charset="UTF-8" />
-  <title>Beabook – Login</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0e0e0e;
-      color: #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
-    }
-    .box {
-      width: 320px;
-      background: #161616;
-      padding: 24px;
-      border-radius: 14px;
-    }
-    h1 {
-      margin-top: 0;
-      text-align: center;
-    }
-    input, textarea {
-      width: 100%;
-      margin-bottom: 10px;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-    }
-    button {
-      width: 100%;
-      padding: 10px;
-      border-radius: 8px;
-      border: none;
-      background: #c45b63;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button.secondary {
-      background: #333;
-      margin-top: 6px;
-    }
-    .hidden {
-      display: none;
-    }
-  </style>
-</head>
-
-<body>
-
-<div class="box">
-  <h1>Beabook</h1>
-
-  <div id="auth">
-    <input id="email" type="email" placeholder="Email" />
-    <input id="password" type="password" placeholder="Password" />
-    <button onclick="signup()">Registrati</button>
-    <button class="secondary" onclick="login()">Login</button>
-  </div>
-
-  <div id="profile" class="hidden">
-    <input id="username" placeholder="Username" />
-    <textarea id="bio" placeholder="Bio"></textarea>
-    <button onclick="saveProfile()">Salva profilo</button>
-    <button class="secondary" onclick="logout()">Logout</button>
-  </div>
-</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+  // 1) CONFIG
   const SUPABASE_URL = "https://cjzipuwdviorsqihsmr.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
+  const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O"; // sb_publishable_...
 
-  const supabase = supabaseJs.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-  );
+  // 2) CLIENT
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  async function signup() {
-    const email = email.value;
-    const password = password.value;
-    await supabase.auth.signUp({ email, password });
-    alert("Registrazione completata");
-  }
-
-  async function login() {
-    const email = email.value;
-    const password = password.value;
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return alert(error.message);
-    showProfile();
-  }
-
-  async function logout() {
-    await supabase.auth.signOut();
-    location.reload();
-  }
-
-  async function showProfile() {
-    auth.classList.add("hidden");
-    profile.classList.remove("hidden");
-  }
-
-  async function saveProfile() {
-    const user = (await supabase.auth.getUser()).data.user;
-    await supabase.from("profiles").upsert({
-      id: user.id,
-      username: username.value,
-      bio: bio.value
-    });
-    alert("Profilo salvato");
-  }
-
-  supabase.auth.onAuthStateChange((event, session) => {
-    if (session) showProfile();
-  });
-<script>
-  const SUPABASE_URL = "https://cjzipuwdviorsqihsmr.supabase.co";
-  const SUPABASE_ANON_KEY = "INCOLLA_QUI_LA_TUA_PUBLISHABLE_KEY"; // sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O
-
-  const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  // helpers
+  // 3) HELPERS
   const $ = (id) => document.getElementById(id);
 
   function showAuth(){
@@ -140,79 +20,66 @@
     $("profile").classList.remove("hidden");
   }
 
-  async function signup() {
-    try{
-      const email = $("email").value.trim();
-      const password = $("password").value.trim();
+  // 4) ACTIONS
+  async function signup(){
+    const email = $("email").value.trim();
+    const password = $("password").value.trim();
 
-      if(!email) return alert("Inserisci una email");
-      if(password.length < 6) return alert("Password troppo corta (min 6 caratteri)");
+    if(!email) return alert("Inserisci una email");
+    if(password.length < 6) return alert("Password minimo 6 caratteri");
 
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if(error) return alert("Errore registrazione: " + error.message);
+    const { data, error } = await sb.auth.signUp({ email, password });
+    if(error) return alert(error.message);
 
-      // Se la conferma email è attiva, Supabase NON crea sessione subito
-      if(!data.session){
-        alert("Registrazione fatta ✅\nOra controlla la tua email per confermare l’account, poi fai Login.");
-        return;
-      }
-
-      alert("Registrazione fatta ✅ Sei entrato.");
-      showProfile();
-    } catch(e){
-      alert("Errore: " + e.message);
+    // se conferma email attiva, sessione è null (sembra che “non vada avanti”)
+    if(!data.session){
+      alert("Registrazione OK ✅\nOra controlla la mail per confermare, poi fai Login.\n(Se vuoi test rapido: disattiva Confirm email su Supabase)");
+      return;
     }
+
+    showProfile();
   }
 
-  async function login() {
-    try{
-      const email = $("email").value.trim();
-      const password = $("password").value.trim();
+  async function login(){
+    const email = $("email").value.trim();
+    const password = $("password").value.trim();
 
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-      if(error) return alert("Errore login: " + error.message);
+    const { data, error } = await sb.auth.signInWithPassword({ email, password });
+    if(error) return alert(error.message);
 
-      showProfile();
-    } catch(e){
-      alert("Errore: " + e.message);
-    }
+    showProfile();
   }
 
-  async function logout() {
-    await supabase.auth.signOut();
+  async function logout(){
+    await sb.auth.signOut();
     showAuth();
   }
 
-  async function saveProfile() {
-    try{
-      const { data: userData, error: userErr } = await supabase.auth.getUser();
-      if(userErr) return alert("Errore utente: " + userErr.message);
-      const user = userData.user;
-      if(!user) return alert("Devi essere loggato.");
+  async function saveProfile(){
+    const { data: userData, error: userErr } = await sb.auth.getUser();
+    if(userErr) return alert(userErr.message);
+    if(!userData.user) return alert("Devi essere loggato.");
 
-      const payload = {
-        id: user.id,
-        username: $("username").value.trim() || null,
-        bio: $("bio").value.trim() || null
-      };
+    const payload = {
+      id: userData.user.id,
+      username: $("username").value.trim() || null,
+      bio: $("bio").value.trim() || null
+    };
 
-      const { error } = await supabase.from("profiles").upsert(payload);
-      if(error) return alert("Errore salvataggio profilo: " + error.message);
+    const { error } = await sb.from("profiles").upsert(payload);
+    if(error) return alert(error.message);
 
-      alert("Profilo salvato ✅");
-    } catch(e){
-      alert("Errore: " + e.message);
-    }
+    alert("Profilo salvato ✅");
   }
 
-  // all’avvio: se c’è sessione, mostra profilo
+  // 5) INIT
   (async ()=>{
-    const { data } = await supabase.auth.getSession();
+    const { data } = await sb.auth.getSession();
     if(data.session) showProfile();
     else showAuth();
   })();
 
-  // espone le funzioni ai bottoni onclick
+  // 6) expose for onclick=""
   window.signup = signup;
   window.login = login;
   window.logout = logout;
