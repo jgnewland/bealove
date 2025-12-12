@@ -2,1072 +2,1761 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8" />
-  <title>bealove – be a love.</title>
+  <title>beabook</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="description" content="bealove – e-commerce di articoli per la casa: decorazioni, cucina, soggiorno, bagno e camera da letto. be a love, porta amore nella tua casa." />
+
   <style>
-    :root {
-      --bg: #f5f5f7;
-      --bg-soft: #ffffff;
-      --primary: #000000;
-      --accent: #000000;       /* nero */
-      --accent-alt: #b75865;   /* rosa bealove */
-      --text: #000000;
-      --muted: #6b7280;
-      --border: #e5e7eb;
-      --danger: #b75865;
-      --shadow-soft: 0 15px 35px rgba(0,0,0,0.08);
-      --radius-lg: 18px;
-      --radius-md: 12px;
-      --radius-sm: 8px;
+    :root{
+      --rose:#B45B63;
+      --rose2:#C56A72;
+      --bg0:#070708;
+      --bg1:#0B0B0C;
+      --panel:rgba(20,20,24,.55);
+      --panel2:rgba(14,14,18,.72);
+      --line:rgba(255,255,255,.12);
+      --line2:rgba(255,255,255,.16);
+      --txt:#fff;
+      --muted:rgba(255,255,255,.70);
+      --muted2:rgba(255,255,255,.55);
+      --shadow: 0 26px 80px rgba(0,0,0,.55);
+      --radius:18px;
+      --radius2:14px;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--txt);
+      background:
+        radial-gradient(1100px 700px at 15% 10%, rgba(180,91,99,.28), transparent 60%),
+        radial-gradient(900px 600px at 80% 20%, rgba(180,91,99,.16), transparent 65%),
+        linear-gradient(180deg, var(--bg0), var(--bg1) 55%, var(--bg0));
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    button{font-family:inherit}
+
+    .wrap{max-width:1240px;margin:0 auto;padding:0 18px 48px}
+
+    /* TOPBAR */
+    .topbar{
+      position:sticky; top:0; z-index:60;
+      backdrop-filter: blur(14px);
+      background: linear-gradient(180deg, rgba(7,7,8,.92), rgba(7,7,8,.62), rgba(7,7,8,.38));
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .topbar-inner{
+      max-width:1240px;margin:0 auto;
+      padding:12px 18px;
+      display:flex; align-items:center; gap:12px;
+    }
+    .brand{display:flex;align-items:center;gap:10px;min-width:170px}
+    .brand img{height:34px;display:block}
+    .nav{
+      display:flex; gap:8px; align-items:center;
+      padding:6px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius:999px;
+    }
+    .nav a{
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:rgba(255,255,255,.78);
+      letter-spacing:.06em;
+      text-transform:uppercase;
+    }
+    .nav a.active{
+      background: rgba(180,91,99,.22);
+      border:1px solid rgba(180,91,99,.55);
+      color:#fff;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    .spacer{flex:1}
 
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
+    .search{
+      flex:1; max-width:560px;
+      display:flex; align-items:center; gap:10px;
+      padding:10px 12px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(15,15,18,.55);
+      border-radius:999px;
+      box-shadow: 0 14px 40px rgba(0,0,0,.35);
+      position:relative;
+      min-width:220px;
     }
-
-    img {
-      max-width: 100%;
-      display: block;
+    .search input{
+      width:100%;
+      border:none; outline:none;
+      background:transparent;
+      color:#fff;
+      font-size:13px;
     }
-
-    a {
-      color: inherit;
-      text-decoration: none;
+    .suggest{
+      position:absolute;
+      top:calc(100% + 8px);
+      left:0; right:0;
+      background: rgba(12,12,14,.92);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:16px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:none;
     }
-
-    button {
-      font-family: inherit;
+    .suggest.open{display:block}
+    .suggest .rowS{
+      display:flex; flex-wrap:wrap; gap:8px;
+      padding:12px;
     }
-
-    .page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+    .chip{
+      cursor:pointer;
+      display:inline-flex;
+      padding:7px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      color: rgba(255,255,255,.82);
+      font-size:12px;
+      text-transform:lowercase;
     }
+    .chip:hover{border-color:rgba(180,91,99,.70)}
 
-    .container {
-      width: 100%;
-      max-width: 1200px;
-      padding: 0 16px;
-      margin: 0 auto;
+    .cta{display:flex; gap:10px; align-items:center}
+    .btn{
+      border:none; cursor:pointer;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:800;
+      color:#0e0e10;
+      background: linear-gradient(135deg, #fff, rgba(255,255,255,.85));
+      box-shadow: 0 18px 55px rgba(0,0,0,.35);
     }
-
-    /* TOP BAR */
-    .top-bar {
-      background: var(--accent);
-      color: #f9fafb;
-      font-size: 0.8rem;
-      padding: 6px 0;
-      text-align: center;
+    .btn:active{transform:translateY(1px)}
+    .btn.ghost{
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color:#fff;
+      box-shadow:none;
     }
-
-    /* HEADER */
-    header {
-      background: #ffffff;
-      border-bottom: 1px solid #e5e7eb;
-      position: sticky;
-      top: 0;
-      z-index: 20;
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      gap: 12px;
-    }
-
-    .logo {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .logo img {
-      height: 38px;
-      width: auto;
-      display: block;
-    }
-
-    .nav-main {
-      display: flex;
-      gap: 18px;
-      font-size: 0.9rem;
-    }
-
-    .nav-main a {
-      position: relative;
-      padding-bottom: 2px;
-      color: var(--accent);
-    }
-
-    .nav-main a::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 0;
-      height: 2px;
-      background: var(--accent);
-      transition: width 0.18s ease;
-    }
-
-    .nav-main a:hover::after {
-      width: 100%;
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 0;
-    }
-
-    .search-box {
-      position: relative;
-      flex: 1;
-      min-width: 160px;
-      max-width: 260px;
-    }
-
-    .search-box input {
-      width: 100%;
-      padding: 8px 30px 8px 10px;
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      font-size: 0.9rem;
-      background: #f9fafb;
-    }
-
-    .search-box span {
-      position: absolute;
-      right: 8px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.85rem;
-      color: #9ca3af;
-    }
-
-    .header-icons {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.1rem;
-    }
-
-    .icon-btn {
-      border-radius: 999px;
-      padding: 6px 8px;
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      position: relative;
-    }
-
-    .icon-btn:hover {
-      background: #f3f4f6;
-    }
-
-    .cart-count {
-      position: absolute;
-      top: -3px;
-      right: -1px;
-      background: var(--accent);
-      color: #f9fafb;
-      font-size: 0.7rem;
-      padding: 1px 5px;
-      border-radius: 999px;
-      min-width: 16px;
-      text-align: center;
+    .btn.primary{
+      background: linear-gradient(135deg, var(--rose), var(--rose2));
+      color:#fff;
+      box-shadow: 0 20px 70px rgba(180,91,99,.25);
     }
 
     /* HERO */
-    .hero {
-      background: linear-gradient(135deg, #e5e7eb, #f9fafb);
-      margin: 10px 0 0;
-      padding: 20px 0 26px;
+    .hero{
+      padding:22px 0 10px;
+      display:grid;
+      grid-template-columns: 1.15fr .85fr;
+      gap:18px;
+      align-items:stretch;
+    }
+    .hero-left{
+      border-radius:var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(20,20,24,.68), rgba(12,12,14,.45));
+      box-shadow: var(--shadow);
+      padding:18px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-left:before{
+      content:"";
+      position:absolute; inset:-140px -140px auto auto;
+      width:460px;height:460px;border-radius:50%;
+      background: radial-gradient(circle at 30% 30%, rgba(180,91,99,.34), transparent 62%);
+      pointer-events:none;
+    }
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      font-size:11px;
+      color: rgba(255,255,255,.78);
+      letter-spacing:.10em;
+      text-transform:uppercase;
+    }
+    .dot{width:7px;height:7px;border-radius:50%;background:var(--rose);box-shadow:0 0 16px rgba(180,91,99,.35)}
+    .hero-left h1{
+      margin:12px 0 8px;
+      font-size: clamp(28px, 3.6vw, 46px);
+      line-height:1.06;
+      letter-spacing:-.02em;
+    }
+    .hero-left p{margin:0;color:var(--muted);font-size:14px;max-width:70ch}
+    .hero-actions{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .mini{color:rgba(255,255,255,.68);font-size:12px}
+    .hero-right{display:grid;gap:12px}
+    .box{
+      border-radius:var(--radius);
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(20,20,24,.60), rgba(12,12,14,.42));
+      box-shadow: 0 18px 60px rgba(0,0,0,.50);
+      overflow:hidden;
     }
 
-    .hero-inner {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-      gap: 22px;
-      align-items: center;
+    .feature-cover{
+      height:190px;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.00), rgba(0,0,0,.62));
+      background-size:cover;
+      background-position:center;
+      position:relative;
+      cursor:pointer;
+    }
+    .feature-badge{
+      position:absolute; left:12px; top:12px;
+      display:inline-flex; gap:6px; align-items:center;
+      padding:6px 10px; border-radius:999px;
+      background: rgba(14,14,16,.55);
+      border:1px solid rgba(255,255,255,.16);
+      font-size:11px; color:#fff;
+      backdrop-filter: blur(10px);
+    }
+    .feature-body{padding:12px}
+    .feature-body h3{margin:0 0 6px;font-size:15px}
+    .feature-body p{margin:0;color:rgba(255,255,255,.72);font-size:13px}
+
+    /* PRO CTA */
+    .pro-cta{
+      width:100%;
+      border:none;
+      cursor:pointer;
+      border-radius:16px;
+      padding:12px 14px;
+      text-align:left;
+      color:#fff;
+      background:
+        radial-gradient(700px 220px at 10% 20%, rgba(255,255,255,.18), transparent 60%),
+        linear-gradient(135deg, var(--rose), #8E3E46);
+      box-shadow: 0 24px 70px rgba(180,91,99,.30);
+      border:1px solid rgba(255,255,255,.16);
+      position:relative;
+      overflow:hidden;
+    }
+    .pro-cta b{display:block;font-size:14px;letter-spacing:.04em}
+    .pro-cta span{display:block;font-size:12px;color:rgba(255,255,255,.80);margin-top:4px}
+    .pro-cta small{
+      display:inline-flex;
+      margin-top:10px;
+      padding:6px 10px;
+      border-radius:999px;
+      background: rgba(14,14,16,.35);
+      border:1px solid rgba(255,255,255,.16);
+      font-size:12px;
     }
 
-    @media (max-width: 900px) {
-      .hero-inner {
-        grid-template-columns: 1fr;
-      }
+    /* SECTIONS */
+    .section{margin-top:18px}
+    .section-head{
+      display:flex; align-items:flex-end; justify-content:space-between; gap:10px;
+      margin: 18px 0 10px;
     }
-
-    .hero-badge {
-      font-size: 0.75rem;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: var(--accent);
-      color: #f9fafb;
-      margin-bottom: 8px;
+    .section-head h2{
+      margin:0;
+      font-size:15px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.92);
     }
+    .section-head .sub{margin:0;color:rgba(255,255,255,.68);font-size:12px}
 
-    .hero-title {
-      font-size: 1.8rem;
-      margin-bottom: 8px;
+    /* SLIDER ROW */
+    .row{
+      display:flex; gap:14px;
+      overflow-x:auto;
+      padding-bottom:10px;
+      scroll-snap-type:x mandatory;
     }
+    .row::-webkit-scrollbar{height:8px}
+    .row::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:999px}
 
-    .hero-text {
-      color: #4b5563;
-      font-size: 0.95rem;
-      max-width: 420px;
-      margin-bottom: 14px;
+    .card{
+      flex: 0 0 200px;
+      scroll-snap-align:start;
+      border-radius: var(--radius2);
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(20,20,24,.42);
+      overflow:hidden;
+      cursor:pointer;
+      transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease;
     }
-
-    .hero-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      margin-bottom: 8px;
+    .card:hover{
+      transform: translateY(-4px);
+      border-color: rgba(180,91,99,.70);
+      box-shadow: 0 18px 60px rgba(0,0,0,.55);
     }
-
-    .btn-primary {
-      background: var(--accent);
-      color: #f9fafb;
-      border-radius: 999px;
-      border: none;
-      padding: 8px 16px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      font-weight: 600;
-      box-shadow: var(--shadow-soft);
-      transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.12s ease;
-    }
-
-    .btn-primary:hover {
-      opacity: 0.95;
-      transform: translateY(-1px);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.18);
-    }
-
-    .btn-secondary {
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
-      padding: 7px 14px;
-      font-size: 0.9rem;
-      cursor: pointer;
-    }
-
-    .hero-note {
-      font-size: 0.8rem;
-      color: #6b7280;
-    }
-
-    .hero-banner {
-      background: var(--accent);
-      border-radius: 18px;
-      color: #f9fafb;
-      padding: 20px;
-      min-height: 150px;
-      display: grid;
-      gap: 6px;
-      box-shadow: var(--shadow-soft);
-    }
-
-    .hero-banner h3 {
-      font-size: 1rem;
-      margin-bottom: 4px;
-    }
-
-    .hero-banner p {
-      font-size: 0.85rem;
-      color: #e5e7eb;
-    }
-
-    .hero-banner-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 6px;
-    }
-
-    .tag-pill {
-      font-size: 0.75rem;
-      background: #f9fafb;
-      color: var(--accent);
-      padding: 3px 8px;
-      border-radius: 999px;
-      border: 1px solid var(--accent-alt);
-    }
-
-    /* FILTRI */
-    .filters {
-      background: #ffffff;
-      border-bottom: 1px solid #e5e7eb;
-    }
-
-    .filters-inner {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 0;
-    }
-
-    .filters-left,
-    .filters-right {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .filter-btn {
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #ffffff;
-      padding: 6px 12px;
-      font-size: 0.8rem;
-      cursor: pointer;
-    }
-
-    .filter-btn.active {
-      background: var(--accent);
-      color: #f9fafb;
-      border-color: var(--accent);
-    }
-
-    .filters-right select {
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      padding: 6px 22px 6px 10px;
-      font-size: 0.8rem;
-      background: #f9fafb;
-    }
-
-    .results-count {
-      font-size: 0.8rem;
-      color: #6b7280;
-    }
-
-    /* GRID PRODOTTI */
-    .content {
-      flex: 1;
-      padding: 18px 0 30px;
-    }
-
-    .products-grid {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 16px;
-    }
-
-    @media (max-width: 900px) {
-      .products-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-    }
-
-    @media (max-width: 520px) {
-      .products-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .product-card {
-      background: #ffffff;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid #e5e7eb;
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-      transition: box-shadow 0.15s ease, transform 0.12s ease;
-    }
-
-    .product-card:hover {
-      box-shadow: var(--shadow-soft);
-      transform: translateY(-2px);
-    }
-
-    .product-image-wrap {
-      position: relative;
+    .cover{
       aspect-ratio: 3/4;
-      background: #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.75rem;
-      color: #6b7280;
+      background-size:cover;
+      background-position:center;
+      background-color: rgba(255,255,255,.06);
+      position:relative;
+    }
+    .cover:after{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(0,0,0,.00), rgba(0,0,0,.78));
+    }
+    .cover .meta{
+      position:absolute; left:10px; right:10px; bottom:10px; z-index:2;
+    }
+    .genre{
+      display:inline-flex;
+      padding:5px 9px;
+      border-radius:999px;
+      background: rgba(14,14,16,.52);
+      border:1px solid rgba(255,255,255,.16);
+      font-size:11px; color:#fff;
+      backdrop-filter: blur(10px);
+      text-transform:lowercase;
+    }
+    .title{
+      margin:8px 0 0;
+      font-size:14px;
+      font-weight:900;
+      line-height:1.2;
+    }
+    .info{
+      padding:10px 11px 12px;
+      display:flex; justify-content:space-between; align-items:center; gap:10px;
+    }
+    .by{
+      color:rgba(255,255,255,.78);
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:120px;
+    }
+    .stat{
+      font-size:12px; color:rgba(255,255,255,.70);
+      border:1px solid rgba(255,255,255,.14);
+      padding:4px 8px;
+      border-radius:999px;
+      background: rgba(255,255,255,.05);
+      white-space:nowrap;
     }
 
-    .product-image-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
+    /* OVERLAYS */
+    .overlay{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.68);
+      backdrop-filter: blur(10px);
+      display:none;
+      z-index:80;
+    }
+    .overlay.open{display:block}
+
+    .sheet{
+      position:absolute; inset:12px;
+      border-radius: 22px;
+      background:
+        radial-gradient(1000px 500px at 20% 0%, rgba(180,91,99,.22), transparent 60%),
+        linear-gradient(180deg, rgba(18,18,22,.92), rgba(10,10,12,.92));
+      border:1px solid rgba(255,255,255,.12);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    .sheet-top{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,12,.42);
+    }
+    .sheet-title{
+      color:rgba(255,255,255,.75);
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+    }
+    .back{
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color: #fff;
+      border-radius: 12px;
+      padding:9px 12px;
+      cursor:pointer;
+      font-weight:800;
     }
 
-    .label-tag {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background: #ffffff;
-      padding: 3px 8px;
+    /* STORY VIEW */
+    .sheet-body{
+      display:grid;
+      grid-template-columns: 1fr 380px;
+      gap:14px;
+      padding:14px;
+      overflow:auto;
+      height:100%;
+    }
+    .story-hero{
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      overflow:hidden;
+      background: rgba(255,255,255,.04);
+    }
+    .story-cover{
+      display:grid;
+      grid-template-columns: 260px 1fr;
+      gap:14px;
+      padding:14px;
+      align-items:start;
+    }
+    .coverFull{
+      width:100%;
+      border-radius:16px;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.03);
+      cursor:pointer;
+    }
+    .coverFull img{
+      width:100%;
+      height:auto;
+      display:block;
+    }
+    .story-meta h1{
+      margin:0 0 8px;
+      font-size:26px;
+      letter-spacing:-.02em;
+      line-height:1.1;
+    }
+    .story-meta p{margin:0;color:rgba(255,255,255,.75);font-size:13px}
+    .panel{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: 18px;
+      padding:12px;
+      margin-top:12px;
+    }
+    .panel h3{
+      margin:0 0 10px;
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.72);
+    }
+    .content{color: rgba(255,255,255,.92);font-size:14px;line-height:1.55}
+    .chaplist{display:flex;flex-direction:column;gap:10px}
+    .chap{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.20);
+      border-radius: 16px;
+      padding:10px;
+    }
+    .chap .foot{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      color:rgba(255,255,255,.70);
+      font-size:12px;
+      margin-top:10px;
+    }
+    .vote{
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      color:#fff;
       border-radius: 999px;
-      font-size: 0.7rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      border: 1px solid var(--accent-alt);
-      color: var(--accent-alt);
+      padding:6px 10px;
+      cursor:pointer;
+      display:inline-flex; gap:6px; align-items:center;
+      font-weight:800;
+    }
+    .vote:hover{border-color: rgba(180,91,99,.70)}
+    .side .panel{position:sticky; top:0}
+    .field{display:flex;flex-direction:column;gap:6px;margin-top:10px}
+    .field label{color:rgba(255,255,255,.70);font-size:12px}
+    .field select, .field input{
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color: #fff;
+      padding:10px;
+      outline:none;
+      font-size:13px;
     }
 
-    .label-tag.sale {
-      background: var(--accent-alt);
-      color: #f9fafb;
-      border-color: var(--accent-alt);
+    /* LIGHTBOX */
+    .lightbox{
+      position:fixed; inset:0;
+      background: rgba(0,0,0,.92);
+      display:none;
+      z-index:120;
+      align-items:center;
+      justify-content:center;
+      padding:18px;
+    }
+    .lightbox.open{display:flex}
+    .lightbox img{
+      max-width:95vw;
+      max-height:92vh;
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      box-shadow: var(--shadow);
+      background:#000;
     }
 
-    .product-body {
-      padding: 10px 10px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    /* EDITOR FULLSCREEN */
+    .editor{
+      position:fixed; inset:0;
+      background:
+        radial-gradient(900px 500px at 20% 0%, rgba(180,91,99,.22), transparent 60%),
+        linear-gradient(180deg, rgba(8,8,10,.98), rgba(8,8,10,.98));
+      display:none;
+      z-index:110;
+    }
+    .editor.open{display:block}
+    .editorShell{
+      position:absolute; inset:12px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(10,10,12,.84);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      display:flex;
+      flex-direction:column;
+    }
+    .editorTop{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:12px;
+      border-bottom:1px solid rgba(255,255,255,.10);
+      background: rgba(10,10,12,.50);
+    }
+    .editorTop .title{
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.72);
+      margin:0;
+    }
+    .editorBody{
+      display:grid;
+      grid-template-columns: 340px 1fr;
+      gap:14px;
+      padding:14px;
+      overflow:auto;
+      height:100%;
     }
 
-    .product-name {
-      font-size: 0.9rem;
-      font-weight: 500;
+    .box2{
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      border-radius: 18px;
+      padding:12px;
     }
-
-    .product-cat {
-      font-size: 0.75rem;
-      color: #6b7280;
+    .box2 h3{
+      margin:0 0 10px;
+      font-size:12px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.72);
     }
-
-    .product-bottom {
-      margin-top: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      font-size: 0.9rem;
+    .grid2{display:grid; gap:10px}
+    .grid2 input, .grid2 select{
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color:#fff;
+      padding:10px;
+      outline:none;
+      font-size:13px;
     }
-
-    .price-line {
-      display: flex;
-      flex-direction: column;
+    .coverPick{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
     }
-
-    .price-main {
-      font-weight: 700;
+    .coverPreview{
+      aspect-ratio: 3/4;
+      border-radius:16px;
+      border:1px dashed rgba(255,255,255,.20);
+      background: rgba(255,255,255,.03);
+      display:grid;
+      place-items:center;
+      color:rgba(255,255,255,.68);
+      overflow:hidden;
+      cursor:pointer;
+      position:relative;
     }
-
-    .price-old {
-      font-size: 0.75rem;
-      text-decoration: line-through;
-      color: #9ca3af;
+    .coverPreview img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
     }
-
-    .btn-add {
-      border-radius: 999px;
-      border: 1px solid var(--accent);
-      padding: 5px 10px;
-      font-size: 0.8rem;
-      cursor: pointer;
-      background: var(--accent);
-      color: #f9fafb;
-      white-space: nowrap;
+    .coverHint{
+      position:absolute;
+      bottom:10px; left:10px; right:10px;
+      background: rgba(0,0,0,.45);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:12px;
+      padding:8px 10px;
+      font-size:12px;
+      color:rgba(255,255,255,.82);
+      backdrop-filter: blur(10px);
+      display:none;
     }
+    .coverPreview.has .coverHint{display:block}
 
-    .btn-add:hover {
-      opacity: 0.95;
+    /* TOOLBAR */
+    .toolbar{
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px;
+      align-items:center;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.10);
+      border-bottom:none;
+      border-radius: 18px 18px 0 0;
+      background: rgba(255,255,255,.04);
     }
-
-    .buy-now {
-      margin-top: 6px;
-      font-size: 0.75rem;
-      color: var(--accent-alt);
-      text-decoration: underline;
-      text-underline-offset: 2px;
+    .toolbtn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color:#fff;
+      border-radius: 12px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-weight:900;
+      font-size:12px;
     }
-
-    /* CARRELLO */
-    .cart-panel-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(15,23,42,0.4);
-      display: none;
-      align-items: stretch;
-      justify-content: flex-end;
-      z-index: 40;
+    .toolbtn:hover{border-color: rgba(180,91,99,.70)}
+    .toolsel{
+      border-radius: 12px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color:#fff;
+      padding:8px 10px;
+      outline:none;
+      font-size:12px;
     }
+    .toolsep{width:1px;height:26px;background:rgba(255,255,255,.12);margin:0 2px}
 
-    .cart-panel {
-      width: 320px;
-      max-width: 100%;
-      background: #ffffff;
-      box-shadow: -12px 0 30px rgba(0,0,0,0.2);
-      display: flex;
-      flex-direction: column;
-      height: 100%;
+    /* EDITABLE */
+    .editable{
+      border:1px solid rgba(255,255,255,.10);
+      border-top:none;
+      border-radius: 0 0 18px 18px;
+      background: rgba(0,0,0,.18);
+      padding:14px;
+      min-height:460px;
+      outline:none;
+      line-height:1.7;
+      font-size:16px;
+      overflow:auto;
+      white-space:pre-wrap;
     }
-
-    .cart-header {
-      padding: 14px 16px;
-      border-bottom: 1px solid #e5e7eb;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
+    .helpRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-top:10px;
+      color:rgba(255,255,255,.70);
+      font-size:12px;
     }
-
-    .cart-title {
-      font-size: 1rem;
-      font-weight: 600;
+    .limitMsg{
+      display:none;
+      color: #ffd0d5;
+      background: rgba(180,91,99,.18);
+      border:1px solid rgba(255,255,255,.14);
+      padding:10px 12px;
+      border-radius: 14px;
     }
+    .limitMsg.show{display:block}
 
-    .cart-close-btn {
-      border: none;
-      background: transparent;
-      cursor: pointer;
-      font-size: 1.2rem;
+    /* COVER BADGE on cards if broken */
+    .coverBad{
+      position:absolute; left:10px; right:10px; top:10px;
+      z-index:3;
+      display:none;
+      padding:8px 10px;
+      border-radius:12px;
+      background: rgba(180,91,99,.24);
+      border:1px solid rgba(255,255,255,.18);
+      color:rgba(255,255,255,.92);
+      font-size:11px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      backdrop-filter: blur(8px);
     }
+    .cover.bad .coverBad{display:block}
+    .cover.bad{background-image:none !important}
 
-    .cart-body {
-      padding: 10px 16px;
-      flex: 1;
-      overflow-y: auto;
-      font-size: 0.85rem;
+    @media (max-width: 1100px){
+      .hero{grid-template-columns:1fr}
+      .sheet-body{grid-template-columns:1fr}
+      .side .panel{position:relative}
+      .editorBody{grid-template-columns:1fr}
+      .story-cover{grid-template-columns:1fr}
+      .coverFull{max-width:320px}
     }
-
-    .cart-empty {
-      color: #6b7280;
-      margin-top: 16px;
-    }
-
-    .cart-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 8px 0;
-      border-bottom: 1px solid #f3f4f6;
-    }
-
-    .cart-item-thumb {
-      width: 48px;
-      height: 64px;
-      border-radius: 10px;
-      background: #e5e7eb;
-      flex-shrink: 0;
-    }
-
-    .cart-item-main {
-      flex: 1;
-    }
-
-    .cart-item-name {
-      font-size: 0.85rem;
-      font-weight: 500;
-      margin-bottom: 2px;
-    }
-
-    .cart-item-meta {
-      font-size: 0.75rem;
-      color: #6b7280;
-    }
-
-    .cart-item-actions {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      margin-top: 4px;
-      font-size: 0.78rem;
-    }
-
-    .qty-btn {
-      border-radius: 999px;
-      border: 1px solid #d1d5db;
-      background: #f9fafb;
-      width: 20px;
-      height: 20px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-
-    .remove-btn {
-      border: none;
-      background: transparent;
-      color: var(--danger);
-      cursor: pointer;
-      font-size: 0.75rem;
-      text-decoration: underline;
-      text-underline-offset: 2px;
-    }
-
-    .cart-footer {
-      border-top: 1px solid #e5e7eb;
-      padding: 12px 16px 16px;
-      font-size: 0.85rem;
-      display: grid;
-      gap: 8px;
-    }
-
-    .cart-total-line {
-      display: flex;
-      justify-content: space-between;
-      font-weight: 600;
-    }
-
-    .cart-note {
-      font-size: 0.75rem;
-      color: #6b7280;
-    }
-
-    .btn-checkout {
-      border-radius: 999px;
-      border: none;
-      background: var(--accent);
-      color: #f9fafb;
-      padding: 8px 12px;
-      font-size: 0.9rem;
-      cursor: pointer;
-      font-weight: 600;
-      width: 100%;
-    }
-
-    /* FOOTER */
-    footer {
-      border-top: 1px solid #e5e7eb;
-      background: #ffffff;
-      font-size: 0.8rem;
-      color: #6b7280;
-      padding: 14px 0 20px;
-      margin-top: auto;
-    }
-
-    .footer-inner {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
+    @media (max-width: 640px){
+      .nav{display:none}
+      .search{min-width:0}
+      .card{flex-basis:170px}
+      .sheet{inset:10px}
+      .editorShell{inset:10px}
+      .coverFull{max-width:100%}
     }
   </style>
 </head>
-<body>
-<div class="page">
-  <div class="top-bar">
-    bealove – be a love. · Spedizione gratuita sopra i 49€ · Resi entro 30 giorni
-  </div>
 
-  <header>
-    <div class="container header-inner">
-      <div class="logo">
-        <img src="https://grandangolosettimanale.it/Black%20White%20Minimal%20Modern%20Simple%20Bold%20Business%20Mag%20Logo.png"
-             alt="bealove logo">
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <img alt="beabook" src="https://raw.githubusercontent.com/jgnewland/bealove/main/LOGO%20BEABOOK.png">
       </div>
 
-      <nav class="nav-main">
-        <a href="#prodotti">Novità</a>
-        <a href="#prodotti">Soggiorno</a>
-        <a href="#prodotti">Cucina</a>
-        <a href="#prodotti">Camera</a>
-        <a href="#prodotti">Bagno</a>
-      </nav>
+      <div class="nav" aria-label="menu">
+        <a href="#home" class="active" id="navHome">Home</a>
+        <a href="#featured" id="navFeatured">In evidenza</a>
+        <a href="#new" id="navNew">Nuove</a>
+        <a href="#loved" id="navLoved">Più amate</a>
+      </div>
 
-      <div class="header-right">
-        <div class="search-box">
-          <input type="text" id="searchInput" placeholder="Cerca in bealove..." />
-          <span>🔍</span>
+      <div class="spacer"></div>
+
+      <div class="search">
+        <span style="opacity:.9">🔎</span>
+        <input id="q" autocomplete="off" placeholder="Cerca racconti, autori, generi…" />
+        <div class="suggest" id="suggest">
+          <div style="padding:10px 12px 0;color:rgba(255,255,255,.62);font-size:11px;letter-spacing:.12em;text-transform:uppercase">
+            Suggerimenti generi
+          </div>
+          <div class="rowS" id="chips"></div>
         </div>
-        <div class="header-icons">
-          <button class="icon-btn" title="Profilo">👤</button>
-          <button class="icon-btn" id="cartButton" title="Carrello">
-            🛒
-            <span class="cart-count" id="cartCount">0</span>
-          </button>
-        </div>
+      </div>
+
+      <div class="cta">
+        <button class="btn ghost" id="randomBtn">🎲 Random</button>
+        <button class="btn primary" id="newStoryBtn">✍️ Crea nuova storia</button>
       </div>
     </div>
-  </header>
+  </div>
 
-  <section class="hero">
-    <div class="container hero-inner">
-      <div>
-        <div class="hero-badge">
-          bealove · collezione Natale
-        </div>
-        <h1 class="hero-title">Natale in casa bealove: cuscini, coperte e biancheria cozy.</h1>
-        <p class="hero-text">
-          Una mini selezione di tessili natalizi per trasformare il tuo soggiorno e la tua camera
-          con poco budget e tanto amore.
+  <div class="wrap" id="home">
+    <section class="hero">
+      <div class="hero-left">
+        <span class="pill"><span class="dot"></span> scrittura collettiva • beta</span>
+        <h1>Racconti brevi, intensi, collaborativi.</h1>
+        <p>
+          Ogni storia vive per capitoli: scrivi un pezzo (max 30 righe), poi passa il testimone.
+          Vota le continuazioni migliori e costruisci un romanzo insieme agli altri.
         </p>
         <div class="hero-actions">
-          <button class="btn-primary" onclick="scrollToProducts()">
-            Scopri i prodotti
-          </button>
-          <button class="btn-secondary" onclick="scrollToProducts('living')">
-            Solo soggiorno
-          </button>
-        </div>
-        <div class="hero-note">
-          Pagamenti sicuri con Stripe (in arrivo) · bealove.it
+          <button class="btn primary" id="browseBtn">Sfoglia le storie</button>
+          <button class="btn ghost" id="openProBtn">Scopri PRO</button>
+          <span class="mini">Consiglio: premi <b>CTRL+K</b> per cercare.</span>
         </div>
       </div>
 
-      <div class="hero-banner">
-        <h3>Cosa trovi qui?</h3>
-        <p>
-          Una vetrina essenziale collegata al tuo magazzino: ogni prodotto ha un codice,
-          un prezzo e un link esterno (per ora Sinsay, in futuro Stripe).
-        </p>
-        <div class="hero-banner-tags">
-          <span class="tag-pill">Natale</span>
-          <span class="tag-pill">Tessili</span>
-          <span class="tag-pill">be a love.</span>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section id="prodotti" class="filters">
-    <div class="container filters-inner">
-      <div class="filters-left">
-        <button class="filter-btn active" data-filter="all">Tutti</button>
-        <button class="filter-btn" data-filter="living">Soggiorno</button>
-        <button class="filter-btn" data-filter="kitchen">Cucina</button>
-        <button class="filter-btn" data-filter="bedroom">Camera da letto</button>
-        <button class="filter-btn" data-filter="bathroom">Bagno</button>
-      </div>
-      <div class="filters-right">
-        <span class="results-count" id="resultsCount">0 prodotti</span>
-        <select id="sortSelect">
-          <option value="default">Ordina</option>
-          <option value="price-asc">Prezzo crescente</option>
-          <option value="price-desc">Prezzo decrescente</option>
-        </select>
-      </div>
-    </div>
-  </section>
-
-  <main class="content">
-    <div class="container">
-      <div class="products-grid" id="productsGrid"></div>
-    </div>
-  </main>
-
-  <div class="cart-panel-backdrop" id="cartBackdrop">
-    <aside class="cart-panel">
-      <div class="cart-header">
-        <div class="cart-title">Carrello bealove</div>
-        <button class="cart-close-btn" id="cartCloseBtn" aria-label="Chiudi carrello">✕</button>
-      </div>
-      <div class="cart-body" id="cartBody"></div>
-      <div class="cart-footer">
-        <div class="cart-total-line">
-          <span>Totale provvisorio</span>
-          <span id="cartTotal">€ 0,00</span>
-        </div>
-        <div class="cart-note">
-          In questa fase, il pulsante può portare a un Payment Link Stripe generale,
-          oppure restare informativo.
-        </div>
-        <button class="btn-checkout" id="checkoutBtn" onclick="goToStripeCheckout()">
-          Procedi al pagamento
-        </button>
-      </div>
-    </aside>
-  </div>
-
-  <footer>
-    <div class="container footer-inner">
-      <span>© <span id="year"></span> bealove · bealove.it · be a love.</span>
-      <span>Ospitato su GitHub Pages · Pagamenti con Stripe (in arrivo)</span>
-    </div>
-  </footer>
-</div>
-
-<script>
-  // === MAGAZZINO BEALOVE: PRODOTTI CON CODICI ===
-  const INVENTARIO = [
-    {
-      sku: "BL001",
-      id: "BL001",
-      name: "Cuscino decorativo con motivo natalizio",
-      category: "living",
-      categoryLabel: "Soggiorno",
-      price: 7.99,          // prezzo BeaLove (puoi cambiarlo)
-      oldPrice: null,
-      tag: "Natale",
-      // Link pagina prodotto esterna (per ora Sinsay)
-      stripeUrl: "https://www.sinsay.com/it/it/cuscino-decorativo-con-motivo-natalizio-023gi-80x",
-      // Immagine di esempio
-      imageUrl: "https://static.sinsay.com/media/catalog/product/cache/850/a4e40ebdc3e371adff845072e1c73f37/0/2/023GI-80X-001-1-1109046.jpg",
-      labelType: "default",
-      inShowcase: true
-    },
-    {
-      sku: "BL002",
-      id: "BL002",
-      name: "Completo di biancheria da letto natalizia",
-      category: "bedroom",
-      categoryLabel: "Camera da letto",
-      price: 24.99,
-      oldPrice: null,
-      tag: "Natale",
-      stripeUrl: "https://www.sinsay.com/it/it/completo-di-biancheria-da-letto-natalizia-108ii-mlc",
-      // immagine generica natalizia (puoi sostituirla con quella giusta)
-      imageUrl: "https://static.sinsay.com/media/catalog/product/cache/850/a4e40ebdc3e371adff845072e1c73f37/2/6/265II-08X-001-1-1099678_1.jpg",
-      labelType: "default",
-      inShowcase: true
-    },
-    {
-      sku: "BL003",
-      id: "BL003",
-      name: "Coperta natalizia con motivo pan di zenzero",
-      category: "living",
-      categoryLabel: "Soggiorno",
-      price: 19.99,
-      oldPrice: null,
-      tag: "Natale",
-      stripeUrl: "https://www.sinsay.com/it/it/coperta-natalizia-con-motivo-pan-di-zenzero-416gh-01p",
-      imageUrl: "https://static.sinsay.com/media/catalog/product/cache/850/a4e40ebdc3e371adff845072e1c73f37/4/1/416GH-77P-001-1-1090411_5.jpg",
-      labelType: "default",
-      inShowcase: true
-    }
-  ];
-
-  let currentFilter = "all";
-  let currentSearch = "";
-  let currentSort = "default";
-  let cart = [];
-
-  function formatPrice(value) {
-    return "€ " + value.toFixed(2).replace(".", ",");
-  }
-
-  function scrollToProducts(filterCategory) {
-    if (filterCategory) {
-      currentFilter = filterCategory;
-      updateFilterButtons();
-    }
-    document.querySelector(".content").scrollIntoView({ behavior: "smooth" });
-    renderProducts();
-  }
-
-  function prodottiInVetrina() {
-    return INVENTARIO.filter(p => p.inShowcase);
-  }
-
-  function getFilteredProducts() {
-    let list = prodottiInVetrina().filter(p => {
-      if (currentFilter !== "all" && p.category !== currentFilter) return false;
-      if (currentSearch) {
-        const q = currentSearch.toLowerCase();
-        return (
-          p.name.toLowerCase().includes(q) ||
-          p.categoryLabel.toLowerCase().includes(q) ||
-          p.sku.toLowerCase().includes(q)
-        );
-      }
-      return true;
-    });
-
-    if (currentSort === "price-asc") list.sort((a,b) => a.price - b.price);
-    else if (currentSort === "price-desc") list.sort((a,b) => b.price - a.price);
-
-    return list;
-  }
-
-  function renderProducts() {
-    const grid = document.getElementById("productsGrid");
-    const resultsCount = document.getElementById("resultsCount");
-    const products = getFilteredProducts();
-
-    grid.innerHTML = "";
-    products.forEach(prod => {
-      const card = document.createElement("article");
-      card.className = "product-card";
-      const hasImage = prod.imageUrl && prod.imageUrl.trim() !== "";
-
-      card.innerHTML = `
-        <div class="product-image-wrap">
-          ${hasImage ? `<img src="${prod.imageUrl}" alt="${prod.name}">` : `<span>Immagine prodotto</span>`}
-          <div class="label-tag ${prod.labelType === "sale" ? "sale" : ""}">
-            ${prod.tag}
+      <div class="hero-right">
+        <div class="box">
+          <div class="feature-cover" id="featuredClickable">
+            <div class="feature-badge">🔥 In evidenza • <span id="featuredGenre">—</span></div>
+          </div>
+          <div class="feature-body">
+            <h3 id="featuredTitle">—</h3>
+            <p id="featuredDesc">—</p>
           </div>
         </div>
-        <div class="product-body">
-          <div class="product-name">${prod.name}</div>
-          <div class="product-cat">${prod.categoryLabel} · <small>Cod. ${prod.sku}</small></div>
-          <div class="product-bottom">
-            <div class="price-line">
-              <span class="price-main">${formatPrice(prod.price)}</span>
-              ${prod.oldPrice ? `<span class="price-old">${formatPrice(prod.oldPrice)}</span>` : ""}
-            </div>
-            <button class="btn-add" onclick="addToCart('${prod.sku}'); event.stopPropagation();">
-              Aggiungi
+
+        <div class="box">
+          <div class="feature-body">
+            <h3>Una community, un racconto per volta.</h3>
+            <p>Con PRO trasformi la storia in un progetto editoriale (selezione capitoli + impaginazione + boost).</p>
+            <button class="pro-cta" id="proCtaBtn">
+              <b>beabook PRO</b>
+              <span>Tool editoriali + impaginazione + storia in evidenza.</span>
+              <small>demo UI · pagamento non attivo</small>
             </button>
           </div>
-          <a class="buy-now" href="${prod.stripeUrl}" target="_blank" rel="noopener" onclick="event.stopPropagation();">
-            Vai alla scheda prodotto
-          </a>
         </div>
-      `;
-      grid.appendChild(card);
-    });
+      </div>
+    </section>
 
-    resultsCount.textContent = products.length + (products.length === 1 ? " prodotto" : " prodotti");
-  }
+    <section class="section" id="featured">
+      <div class="section-head">
+        <div>
+          <h2>In evidenza</h2>
+          <p class="sub">Più continuazioni = più energia.</p>
+        </div>
+        <p class="sub">Scorri →</p>
+      </div>
+      <div class="row" id="rowFeatured"></div>
+    </section>
 
-  function updateFilterButtons() {
-    document.querySelectorAll(".filter-btn").forEach(btn => {
-      const filter = btn.getAttribute("data-filter");
-      btn.classList.toggle("active", filter === currentFilter);
-    });
-  }
+    <section class="section" id="new">
+      <div class="section-head">
+        <div>
+          <h2>Nuove uscite</h2>
+          <p class="sub">Appena nate. Seleziona e continua.</p>
+        </div>
+        <p class="sub">Scorri →</p>
+      </div>
+      <div class="row" id="rowNew"></div>
+    </section>
 
-  function findCartItem(sku) {
-    return cart.find(item => item.sku === sku);
-  }
+    <section class="section" id="loved">
+      <div class="section-head">
+        <div>
+          <h2>Più amate</h2>
+          <p class="sub">Le continuazioni con più ❤.</p>
+        </div>
+        <p class="sub">Scorri →</p>
+      </div>
+      <div class="row" id="rowLoved"></div>
+    </section>
+  </div>
 
-  function getProductBySku(sku) {
-    return INVENTARIO.find(p => p.sku === sku);
-  }
+  <!-- STORY OVERLAY -->
+  <div class="overlay" id="storyOverlay">
+    <div class="sheet" role="dialog" aria-modal="true">
+      <div class="sheet-top">
+        <button class="back" id="storyBack">← Indietro</button>
+        <div class="sheet-title">Racconto</div>
+        <button class="btn primary" id="continueBtn">Continua la storia</button>
+      </div>
 
-  function addToCart(sku) {
-    const existing = findCartItem(sku);
-    if (existing) existing.qty += 1;
-    else cart.push({ sku, qty: 1 });
-    updateCartCount();
-    renderCart();
-  }
+      <div class="sheet-body">
+        <div>
+          <div class="story-hero">
+            <div class="story-cover">
+              <div class="coverFull" id="storyCoverClick" title="Clicca per vedere la copertina intera">
+                <img id="storyCoverImg" alt="copertina">
+              </div>
 
-  function changeQty(sku, delta) {
-    const item = findCartItem(sku);
-    if (!item) return;
-    item.qty += delta;
-    if (item.qty <= 0) cart = cart.filter(i => i.sku !== sku);
-    updateCartCount();
-    renderCart();
-  }
-
-  function removeFromCart(sku) {
-    cart = cart.filter(i => i.sku !== sku);
-    updateCartCount();
-    renderCart();
-  }
-
-  function updateCartCount() {
-    const countEl = document.getElementById("cartCount");
-    const totalQty = cart.reduce((sum, item) => sum + item.qty, 0);
-    countEl.textContent = totalQty;
-  }
-
-  function renderCart() {
-    const cartBody = document.getElementById("cartBody");
-    const cartTotal = document.getElementById("cartTotal");
-
-    if (cart.length === 0) {
-      cartBody.innerHTML = `<div class="cart-empty">Il carrello bealove è vuoto. Aggiungi qualche prodotto dalla lista.</div>`;
-      cartTotal.textContent = formatPrice(0);
-      return;
-    }
-
-    let total = 0;
-    cartBody.innerHTML = "";
-    cart.forEach(item => {
-      const prod = getProductBySku(item.sku);
-      if (!prod) return;
-      const lineTotal = prod.price * item.qty;
-      total += lineTotal;
-
-      const row = document.createElement("div");
-      row.className = "cart-item";
-      row.innerHTML = `
-        <div class="cart-item-thumb"></div>
-        <div class="cart-item-main">
-          <div class="cart-item-name">${prod.name}</div>
-          <div class="cart-item-meta">
-            ${prod.categoryLabel} · Cod. ${prod.sku} · ${formatPrice(prod.price)} x ${item.qty} = ${formatPrice(lineTotal)}
+              <div class="story-meta">
+                <span class="genre" id="storyGenre"></span>
+                <h1 id="storyTitle"></h1>
+                <p id="storyMeta"></p>
+                <div class="panel">
+                  <h3>Incipit</h3>
+                  <div class="content" id="storyIncipit"></div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="cart-item-actions">
-            <button class="qty-btn" onclick="changeQty('${item.sku}', -1)">-</button>
-            <span>${item.qty}</span>
-            <button class="qty-btn" onclick="changeQty('${item.sku}', 1)">+</button>
-            <button class="remove-btn" onclick="removeFromCart('${item.sku}')">Rimuovi</button>
+
+          <div class="panel">
+            <h3>Continuazioni</h3>
+            <div class="chaplist" id="chapList"></div>
           </div>
         </div>
-      `;
-      cartBody.appendChild(row);
-    });
 
-    cartTotal.textContent = formatPrice(total);
+        <div class="side">
+          <div class="panel">
+            <h3>Statistiche</h3>
+            <div class="content" id="storyStats"></div>
+
+            <div class="field">
+              <label>Ordina continuazioni</label>
+              <select id="chapSort">
+                <option value="top">Più votate</option>
+                <option value="new">Più recenti</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Cerca nelle continuazioni</label>
+              <input id="chapFilter" placeholder="Una parola…" />
+            </div>
+
+            <p class="content" style="color:rgba(255,255,255,.68);font-size:12px;margin-top:10px">
+              Vota con ❤. Scrivi al massimo 30 righe per continuazione.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox" id="lightbox">
+    <img id="lightboxImg" alt="copertina intera">
+  </div>
+
+  <!-- PRO OVERLAY -->
+  <div class="overlay" id="proOverlay">
+    <div class="sheet" role="dialog" aria-modal="true">
+      <div class="sheet-top">
+        <button class="back" id="proBack">← Chiudi</button>
+        <div class="sheet-title">beabook PRO</div>
+        <button class="btn primary" id="proActivate">Attiva PRO</button>
+      </div>
+      <div class="sheet-body" style="grid-template-columns:1.2fr .8fr">
+        <div>
+          <div class="panel" style="margin-top:0">
+            <h3>Cos’è PRO</h3>
+            <div class="content" style="color:rgba(255,255,255,.82)">
+              PRO trasforma un racconto collaborativo in un “progetto editoriale”:
+              selezione capitoli migliori, struttura, indice e impaginazione.
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Funzionalità PRO</h3>
+            <div class="content">
+              <ul style="margin:0;padding-left:18px;line-height:1.6">
+                <li><b>Curatela</b>: selezione capitoli migliori (voti + editor)</li>
+                <li><b>Impaginazione</b>: PDF pronto (copertina + indice)</li>
+                <li><b>Boost</b>: storia in evidenza in home</li>
+                <li><b>Note</b>: coordinamento tra co-autori</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="panel">
+            <h3>Nota</h3>
+            <div class="content" style="color:rgba(255,255,255,.72)">
+              Qui è solo demo UI. Quando vuoi, implementiamo pagamenti e funzioni reali.
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div class="panel" style="margin-top:0">
+            <h3>Piano</h3>
+            <div class="content">
+              <div style="font-size:34px;font-weight:900;letter-spacing:-.02em">9€ <span style="font-size:14px;color:rgba(255,255,255,.7)">/ mese</span></div>
+              <div style="color:rgba(255,255,255,.72);font-size:13px;margin-top:6px">Disdici quando vuoi.</div>
+              <button class="btn primary" style="width:100%;margin-top:12px" id="proActivate2">Attiva PRO</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDITOR OVERLAY -->
+  <div class="editor" id="editorOverlay">
+    <div class="editorShell">
+      <div class="editorTop">
+        <button class="back" id="editorBack">← Indietro</button>
+        <div class="title" id="editorModeTitle">Nuova storia</div>
+        <button class="btn primary" id="publishBtn">Pubblica</button>
+      </div>
+
+      <div class="editorBody">
+        <div class="box2">
+          <h3>Dati racconto</h3>
+          <div class="grid2">
+            <div class="coverPick">
+              <div class="coverPreview" id="coverPreview">
+                <div style="padding:14px;text-align:center">
+                  Clicca per caricare una copertina<br>
+                  <span style="color:rgba(255,255,255,.55);font-size:12px">oppure usa un link sotto</span>
+                </div>
+                <div class="coverHint">clicca per cambiare copertina</div>
+              </div>
+              <input type="file" id="coverFile" accept="image/*" hidden>
+              <input id="coverUrl" placeholder="Link copertina (RAW o URL immagine)" />
+            </div>
+
+            <input id="storyTitleInput" placeholder="Titolo" />
+            <input id="storyAliasInput" placeholder="Firma / alias" />
+            <select id="storyGenreInput">
+              <option value="mistero">mistero</option>
+              <option value="thriller">thriller</option>
+              <option value="noir">noir</option>
+              <option value="dramma">dramma</option>
+              <option value="romance">romance</option>
+              <option value="fantascienza">fantascienza</option>
+              <option value="horror">horror</option>
+              <option value="avventura">avventura</option>
+              <option value="fantasy">fantasy</option>
+              <option value="commedia">commedia</option>
+            </select>
+
+            <button class="btn ghost" id="clearDraft">Svuota bozza</button>
+          </div>
+
+          <div style="margin-top:12px;color:rgba(255,255,255,.65);font-size:12px;line-height:1.5">
+            <b>Regola beabook:</b> massimo 30 righe per contributo. Quando arrivi al limite, devi fermarti.
+          </div>
+        </div>
+
+        <div>
+          <div class="toolbar">
+            <button class="toolbtn" data-cmd="undo" title="Undo">↶</button>
+            <button class="toolbtn" data-cmd="redo" title="Redo">↷</button>
+            <span class="toolsep"></span>
+
+            <button class="toolbtn" data-cmd="bold" title="Grassetto"><b>B</b></button>
+            <button class="toolbtn" data-cmd="italic" title="Corsivo"><i>I</i></button>
+            <button class="toolbtn" data-cmd="underline" title="Sottolineato"><u>U</u></button>
+            <button class="toolbtn" data-cmd="strikeThrough" title="Barrato">S</button>
+
+            <span class="toolsep"></span>
+
+            <select class="toolsel" id="fontSel" title="Font">
+              <option value="Georgia, serif">Serif (Georgia)</option>
+              <option value="system-ui, -apple-system, Segoe UI, sans-serif" selected>Sans (System)</option>
+              <option value="ui-monospace, SFMono-Regular, Menlo, monospace">Mono</option>
+            </select>
+
+            <select class="toolsel" id="sizeSel" title="Grandezza">
+              <option value="14">14</option>
+              <option value="16" selected>16</option>
+              <option value="18">18</option>
+              <option value="20">20</option>
+              <option value="24">24</option>
+            </select>
+
+            <span class="toolsep"></span>
+
+            <button class="toolbtn" data-cmd="justifyLeft" title="Allinea a sinistra">≡</button>
+            <button class="toolbtn" data-cmd="justifyCenter" title="Centra">≣</button>
+            <button class="toolbtn" data-cmd="justifyRight" title="Allinea a destra">≡</button>
+
+            <span class="toolsep"></span>
+
+            <button class="toolbtn" data-cmd="insertUnorderedList" title="Lista">• list</button>
+            <button class="toolbtn" data-cmd="insertOrderedList" title="Numerata">1. list</button>
+          </div>
+
+          <div id="editable" class="editable" contenteditable="true" spellcheck="true"></div>
+
+          <div class="helpRow">
+            <div id="lineCounter">0 / 30 righe</div>
+            <div style="color:rgba(255,255,255,.60)">Suggerimento: vai a capo con Invio. Ogni riga conta.</div>
+          </div>
+
+          <div class="limitMsg" id="limitMsg">
+            Limite delle trenta righe raggiunto. Aspetta che qualcuno continui la storia.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* =========================
+   STORAGE + SEED
+========================= */
+const STORAGE_KEY = "beabook_full_v1";
+
+const GENRES = ["mistero","thriller","noir","dramma","romance","fantascienza","horror","avventura","fantasy","commedia"];
+
+const seedStories = [
+  {
+    id:"s1",
+    title:"La casa sulla scogliera",
+    genre:"mistero",
+    author:"Nora",
+    cover:"https://raw.githubusercontent.com/jgnewland/bealove/main/1.jpg",
+    incipitHtml:"<p>Il vento si arrampicava sui vetri come un ladro. Nora restò ferma, ascoltando il rumore del mare dietro il pub.</p>",
+    chapters:[
+      {id:"c1", author:"Anonimo", votes:6, createdAt: Date.now()-1000*60*60*6, html:"<p>La porta non cigolò. Peggio: si aprì senza alcun suono, come se la casa l’avesse già previsto.</p>"},
+      {id:"c2", author:"Anonimo", votes:2, createdAt: Date.now()-1000*60*60*4, html:"<p>Dentro, l’odore non era di pioggia. Era di fumo vecchio e carta bagnata.</p>"}
+    ],
+    createdAt: Date.now()-1000*60*60*48
+  },
+  {
+    id:"s2",
+    title:"Fenit, ore 22:17",
+    genre:"thriller",
+    author:"John",
+    cover:"https://raw.githubusercontent.com/jgnewland/bealove/main/2.jpg",
+    incipitHtml:"<p>Alle 22:17 il telefono vibrò due volte e poi tacque. John capì che qualcuno stava decidendo al posto suo.</p>",
+    chapters:[],
+    createdAt: Date.now()-1000*60*60*30
+  },
+  {
+    id:"s3",
+    title:"Il silenzio di Sam",
+    genre:"dramma",
+    author:"Anonimo",
+    cover:"https://raw.githubusercontent.com/jgnewland/bealove/main/3.jpg",
+    incipitHtml:"<p>Sam non parlava più da settimane. Eppure quella sera la barca tornò a riva come se avesse una voce.</p>",
+    chapters:[
+      {id:"c3", author:"Anonimo", votes:4, createdAt: Date.now()-1000*60*60*10, html:"<p>Sulla panca di poppa c’era una tazza di tè caldo. Nessuno capì come potesse esserlo.</p>"}
+    ],
+    createdAt: Date.now()-1000*60*60*12
+  },
+  {
+    id:"s4",
+    title:"La stanza 24",
+    genre:"noir",
+    author:"Teresa",
+    cover:"https://raw.githubusercontent.com/jgnewland/bealove/main/4.jpg",
+    incipitHtml:"<p>Il numero 24 era inciso sul legno come una minaccia. Teresa posò la mano e sentì il freddo passare attraverso la pelle.</p>",
+    chapters:[],
+    createdAt: Date.now()-1000*60*60*8
+  },
+  {
+    id:"s5",
+    title:"Mandorli in fiore",
+    genre:"romance",
+    author:"Salvo",
+    cover:"https://raw.githubusercontent.com/jgnewland/bealove/main/5.jpg",
+    incipitHtml:"<p>Non era stagione, eppure il profumo c’era. Un ricordo che non chiedeva permesso.</p>",
+    chapters:[],
+    createdAt: Date.now()-1000*60*60*5
   }
+];
 
-  function openCart() {
-    document.getElementById("cartBackdrop").style.display = "flex";
+function loadStories(){
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if(!raw) return structuredClone(seedStories);
+  try{
+    const data = JSON.parse(raw);
+    if(Array.isArray(data) && data.length) return data;
+    return structuredClone(seedStories);
+  }catch{
+    return structuredClone(seedStories);
   }
+}
+function saveStories(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(stories));
+}
+let stories = loadStories();
 
-  function closeCart() {
-    document.getElementById("cartBackdrop").style.display = "none";
-  }
+/* =========================
+   HELPERS
+========================= */
+function escapeHtml(str){
+  return (str||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;");
+}
+function contCount(s){ return (s.chapters||[]).length; }
+function totalVotes(s){ return (s.chapters||[]).reduce((a,c)=>a+(c.votes||0),0); }
+function shortTextFromHtml(html){
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html || "";
+  const t = (tmp.textContent || "").trim();
+  return t.length > 110 ? t.slice(0,110)+"…" : (t || "Apri e continua la storia.");
+}
+function uid(prefix){
+  return prefix + Math.random().toString(16).slice(2) + Date.now().toString(16);
+}
 
-  function goToStripeCheckout() {
-    const stripeLink = "#"; // qui metterai il tuo Payment Link Stripe generale
-    if (stripeLink === "#") {
-      alert("Collega qui il tuo Payment Link Stripe per il pagamento dell'ordine bealove.");
+/* =========================
+   RENDER HOME ROWS
+========================= */
+const rowFeatured = document.getElementById("rowFeatured");
+const rowNew = document.getElementById("rowNew");
+const rowLoved = document.getElementById("rowLoved");
+
+const featuredClickable = document.getElementById("featuredClickable");
+const featuredTitle = document.getElementById("featuredTitle");
+const featuredDesc = document.getElementById("featuredDesc");
+const featuredGenre = document.getElementById("featuredGenre");
+
+let featuredId = null;
+
+function cardHTML(story){
+  const stats = `${contCount(story)} cont. · ${totalVotes(story)} ❤`;
+  const coverAttr = escapeHtml(story.cover || "");
+  return `
+    <div class="card" data-id="${story.id}">
+      <div class="cover" data-cover="${coverAttr}">
+        <div class="coverBad">Copertina non caricata</div>
+        <div class="meta">
+          <span class="genre">${escapeHtml(story.genre||"racconto")}</span>
+          <div class="title">${escapeHtml(story.title)}</div>
+        </div>
+      </div>
+      <div class="info">
+        <div class="by">${escapeHtml(story.author||"Anonimo")}</div>
+        <div class="stat">${stats}</div>
+      </div>
+    </div>
+  `;
+}
+
+function applyCoverBackgrounds(root=document){
+  root.querySelectorAll(".cover").forEach(div=>{
+    const url = div.getAttribute("data-cover");
+    if(!url){
+      div.classList.add("bad");
       return;
     }
-    window.open(stripeLink, "_blank");
-  }
-
-  document.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    document.querySelectorAll(".filter-btn").forEach(btn => {
-      btn.addEventListener("click", () => {
-        currentFilter = btn.getAttribute("data-filter");
-        updateFilterButtons();
-        renderProducts();
-      });
-    });
-
-    document.getElementById("searchInput").addEventListener("input", (e) => {
-      currentSearch = e.target.value.trim();
-      renderProducts();
-    });
-
-    document.getElementById("sortSelect").addEventListener("change", (e) => {
-      currentSort = e.target.value;
-      renderProducts();
-    });
-
-    document.getElementById("cartButton").addEventListener("click", openCart);
-    document.getElementById("cartCloseBtn").addEventListener("click", closeCart);
-    document.getElementById("cartBackdrop").addEventListener("click", (e) => {
-      if (e.target.id === "cartBackdrop") closeCart();
-    });
-
-    renderProducts();
-    updateCartCount();
-    renderCart();
+    const img = new Image();
+    img.onload = () => {
+      div.style.backgroundImage = `url('${url}')`;
+      div.classList.remove("bad");
+    };
+    img.onerror = () => div.classList.add("bad");
+    img.src = url;
   });
+}
+
+function setFeatured(story){
+  if(!story) return;
+  featuredId = story.id;
+  featuredTitle.textContent = story.title;
+  featuredGenre.textContent = story.genre || "racconto";
+  featuredDesc.textContent = shortTextFromHtml(story.incipitHtml);
+
+  if(story.cover){
+    featuredClickable.style.backgroundImage =
+      `linear-gradient(180deg, rgba(0,0,0,.00), rgba(0,0,0,.62)), url('${story.cover}')`;
+  }else{
+    featuredClickable.style.backgroundImage =
+      `linear-gradient(135deg, rgba(180,91,99,.55), rgba(0,0,0,.35))`;
+  }
+}
+
+function renderRows(list=stories){
+  const featured = [...list].sort((a,b)=>contCount(b)-contCount(a)).slice(0,14);
+  const newest = [...list].sort((a,b)=>(b.createdAt||0)-(a.createdAt||0)).slice(0,14);
+  const loved = [...list].sort((a,b)=>totalVotes(b)-totalVotes(a)).slice(0,14);
+
+  rowFeatured.innerHTML = featured.map(cardHTML).join("");
+  rowNew.innerHTML = newest.map(cardHTML).join("");
+  rowLoved.innerHTML = loved.map(cardHTML).join("");
+
+  document.querySelectorAll(".card").forEach(el=>{
+    el.addEventListener("click", ()=> openStory(el.dataset.id));
+  });
+
+  applyCoverBackgrounds();
+  setFeatured(featured[0] || list[0]);
+}
+
+featuredClickable.addEventListener("click", ()=>{ if(featuredId) openStory(featuredId); });
+
+/* =========================
+   SEARCH + GENRE SUGGEST
+========================= */
+const q = document.getElementById("q");
+const suggest = document.getElementById("suggest");
+const chips = document.getElementById("chips");
+
+chips.innerHTML = GENRES.map(g=>`<span class="chip" data-g="${g}">${g}</span>`).join("");
+chips.querySelectorAll(".chip").forEach(ch=>{
+  ch.addEventListener("click", ()=>{
+    q.value = ch.dataset.g;
+    suggest.classList.remove("open");
+    runSearch();
+  });
+});
+
+function runSearch(){
+  const term = q.value.trim().toLowerCase();
+  if(!term){
+    renderRows(stories);
+    return;
+  }
+  const filtered = stories.filter(s =>
+    (s.title||"").toLowerCase().includes(term) ||
+    (s.author||"").toLowerCase().includes(term) ||
+    (s.genre||"").toLowerCase().includes(term) ||
+    shortTextFromHtml(s.incipitHtml).toLowerCase().includes(term)
+  );
+  renderRows(filtered);
+}
+
+q.addEventListener("focus", ()=> suggest.classList.add("open"));
+q.addEventListener("blur", ()=> setTimeout(()=>suggest.classList.remove("open"), 140));
+q.addEventListener("input", runSearch);
+
+window.addEventListener("keydown", (e)=>{
+  if((e.ctrlKey || e.metaKey) && e.key.toLowerCase()==="k"){
+    e.preventDefault(); q.focus(); suggest.classList.add("open");
+  }
+});
+
+/* =========================
+   NAV + BUTTONS
+========================= */
+document.getElementById("browseBtn").addEventListener("click", ()=>{
+  document.getElementById("featured").scrollIntoView({behavior:"smooth", block:"start"});
+});
+document.getElementById("randomBtn").addEventListener("click", ()=>{
+  const pick = stories[Math.floor(Math.random()*stories.length)];
+  openStory(pick.id);
+});
+document.getElementById("openProBtn").addEventListener("click", ()=> openPro());
+document.getElementById("proCtaBtn").addEventListener("click", ()=> openPro());
+
+/* =========================
+   STORY OVERLAY
+========================= */
+const storyOverlay = document.getElementById("storyOverlay");
+const storyBack = document.getElementById("storyBack");
+const continueBtn = document.getElementById("continueBtn");
+
+const storyCoverImg = document.getElementById("storyCoverImg");
+const storyCoverClick = document.getElementById("storyCoverClick");
+const storyGenre = document.getElementById("storyGenre");
+const storyTitle = document.getElementById("storyTitle");
+const storyMeta = document.getElementById("storyMeta");
+const storyIncipit = document.getElementById("storyIncipit");
+const storyStats = document.getElementById("storyStats");
+const chapList = document.getElementById("chapList");
+const chapSort = document.getElementById("chapSort");
+const chapFilter = document.getElementById("chapFilter");
+
+let currentStoryId = null;
+
+function openStory(id){
+  const s = stories.find(x=>x.id===id);
+  if(!s) return;
+  currentStoryId = id;
+
+  storyCoverImg.src = s.cover || "";
+  storyGenre.textContent = s.genre || "racconto";
+  storyTitle.textContent = s.title;
+  storyMeta.textContent = `di ${s.author || "Anonimo"}`;
+  storyIncipit.innerHTML = s.incipitHtml || "";
+  storyStats.textContent = `${contCount(s)} continuazioni · ${totalVotes(s)} ❤`;
+
+  chapSort.value = "top";
+  chapFilter.value = "";
+  renderChapters();
+
+  storyOverlay.classList.add("open");
+  document.body.style.overflow="hidden";
+}
+
+function closeStory(){
+  storyOverlay.classList.remove("open");
+  document.body.style.overflow="";
+}
+
+function renderChapters(){
+  const s = stories.find(x=>x.id===currentStoryId);
+  if(!s) return;
+  let ch = [...(s.chapters||[])];
+
+  const term = chapFilter.value.trim().toLowerCase();
+  if(term){
+    ch = ch.filter(c=>{
+      const tmp = document.createElement("div");
+      tmp.innerHTML = c.html || "";
+      return (tmp.textContent||"").toLowerCase().includes(term) ||
+             (c.author||"").toLowerCase().includes(term);
+    });
+  }
+
+  if(chapSort.value === "new"){
+    ch.sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));
+  } else {
+    ch.sort((a,b)=>(b.votes||0)-(a.votes||0));
+  }
+
+  if(!ch.length){
+    chapList.innerHTML = `<div class="chap"><div class="content" style="color:rgba(255,255,255,.75)">Nessuna continuazione (o nessun risultato).</div></div>`;
+    return;
+  }
+
+  chapList.innerHTML = ch.map(c=>`
+    <div class="chap">
+      <div class="content">${c.html || ""}</div>
+      <div class="foot">
+        <span>— ${escapeHtml(c.author||"Anonimo")}</span>
+        <button class="vote" data-cid="${c.id}">❤ <b>${c.votes||0}</b></button>
+      </div>
+    </div>
+  `).join("");
+
+  chapList.querySelectorAll(".vote").forEach(btn=>{
+    btn.addEventListener("click", ()=> voteChapter(btn.dataset.cid));
+  });
+}
+
+function voteChapter(cid){
+  const s = stories.find(x=>x.id===currentStoryId);
+  if(!s) return;
+  const c = (s.chapters||[]).find(x=>x.id===cid);
+  if(!c) return;
+  c.votes = (c.votes||0)+1;
+  saveStories();
+  storyStats.textContent = `${contCount(s)} continuazioni · ${totalVotes(s)} ❤`;
+  renderChapters();
+  renderRows(); // aggiorna home
+}
+
+chapSort.addEventListener("change", renderChapters);
+chapFilter.addEventListener("input", renderChapters);
+storyBack.addEventListener("click", closeStory);
+storyOverlay.addEventListener("click", (e)=>{ if(e.target===storyOverlay) closeStory(); });
+
+/* Cover lightbox */
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+storyCoverClick.addEventListener("click", ()=>{
+  if(!storyCoverImg.src) return;
+  lightboxImg.src = storyCoverImg.src;
+  lightbox.classList.add("open");
+});
+lightbox.addEventListener("click", ()=> lightbox.classList.remove("open"));
+
+/* Continue story -> open editor in continuation mode */
+continueBtn.addEventListener("click", ()=>{
+  if(!currentStoryId) return;
+  openEditor({mode:"continue", storyId: currentStoryId});
+});
+
+/* =========================
+   PRO OVERLAY
+========================= */
+const proOverlay = document.getElementById("proOverlay");
+document.getElementById("proBack").addEventListener("click", closePro);
+proOverlay.addEventListener("click", (e)=>{ if(e.target===proOverlay) closePro(); });
+
+function openPro(){
+  proOverlay.classList.add("open");
+  document.body.style.overflow="hidden";
+}
+function closePro(){
+  proOverlay.classList.remove("open");
+  document.body.style.overflow="";
+}
+function proActivate(){
+  alert("Demo UI: qui attiveremo PRO (pagamento + funzioni).");
+}
+document.getElementById("proActivate").addEventListener("click", proActivate);
+document.getElementById("proActivate2").addEventListener("click", proActivate);
+
+/* =========================
+   EDITOR (NEW STORY / CONTINUE)
+========================= */
+const editorOverlay = document.getElementById("editorOverlay");
+const editorBack = document.getElementById("editorBack");
+const publishBtn = document.getElementById("publishBtn");
+const editorModeTitle = document.getElementById("editorModeTitle");
+
+const coverPreview = document.getElementById("coverPreview");
+const coverFile = document.getElementById("coverFile");
+const coverUrl = document.getElementById("coverUrl");
+
+const storyTitleInput = document.getElementById("storyTitleInput");
+const storyAliasInput = document.getElementById("storyAliasInput");
+const storyGenreInput = document.getElementById("storyGenreInput");
+
+const editable = document.getElementById("editable");
+const lineCounter = document.getElementById("lineCounter");
+const limitMsg = document.getElementById("limitMsg");
+
+const fontSel = document.getElementById("fontSel");
+const sizeSel = document.getElementById("sizeSel");
+
+const clearDraftBtn = document.getElementById("clearDraft");
+
+let editorState = {
+  mode: "new",      // "new" | "continue"
+  storyId: null,
+  coverDataUrl: "", // for new story if uploaded
+};
+
+const DRAFT_KEY = "beabook_editor_draft_v1";
+
+/* Toolbar commands */
+document.querySelectorAll(".toolbtn[data-cmd]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const cmd = btn.dataset.cmd;
+    editable.focus();
+    document.execCommand(cmd, false, null);
+    enforceLineLimit();
+  });
+});
+
+/* Font + size apply */
+function applyEditorStyle(){
+  editable.style.fontFamily = fontSel.value;
+  editable.style.fontSize = `${parseInt(sizeSel.value,10)}px`;
+}
+fontSel.addEventListener("change", applyEditorStyle);
+sizeSel.addEventListener("change", applyEditorStyle);
+
+/* Cover upload */
+coverPreview.addEventListener("click", ()=> coverFile.click());
+coverFile.addEventListener("change", ()=>{
+  const f = coverFile.files?.[0];
+  if(!f) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    editorState.coverDataUrl = String(reader.result || "");
+    setCoverPreview(editorState.coverDataUrl);
+    saveDraft();
+  };
+  reader.readAsDataURL(f);
+});
+
+/* Cover URL */
+coverUrl.addEventListener("input", ()=>{
+  const url = coverUrl.value.trim();
+  if(url){
+    editorState.coverDataUrl = ""; // prefer URL (not data)
+    setCoverPreview(url);
+  }else{
+    setCoverPreview("");
+  }
+  saveDraft();
+});
+
+function setCoverPreview(src){
+  if(!src){
+    coverPreview.classList.remove("has");
+    coverPreview.innerHTML = `<div style="padding:14px;text-align:center">Clicca per caricare una copertina<br><span style="color:rgba(255,255,255,.55);font-size:12px">oppure usa un link sotto</span></div><div class="coverHint">clicca per cambiare copertina</div>`;
+    return;
+  }
+  coverPreview.classList.add("has");
+  coverPreview.innerHTML = `<img alt="preview" src="${src}"><div class="coverHint">clicca per cambiare copertina</div>`;
+}
+
+/* Line limit: max 30 lines */
+function getLineCountFromText(text){
+  const t = (text || "").replace(/\r/g,"");
+  if(!t.trim()) return 0;
+  return t.split("\n").length;
+}
+function normalizeToPlainTextWithNewlines(){
+  // Convert HTML to plain text while preserving line breaks reasonably
+  // We'll read innerText (browser gives line breaks as newlines)
+  return editable.innerText.replace(/\r/g,"");
+}
+function enforceLineLimit(){
+  const txt = normalizeToPlainTextWithNewlines();
+  const lines = getLineCountFromText(txt);
+  lineCounter.textContent = `${Math.min(lines,30)} / 30 righe`;
+
+  if(lines >= 30){
+    limitMsg.classList.add("show");
+    // hard trim to first 30 lines preserving basic formatting by rebuilding plain text
+    const cut = txt.split("\n").slice(0,30).join("\n");
+    // Set plain text (formatting will reset). For usability we keep formatting while typing up to 30.
+    // If user hits 31st line we freeze input by reverting to trimmed plain text.
+    editable.innerText = cut;
+    placeCaretAtEnd(editable);
+    return;
+  }
+  limitMsg.classList.remove("show");
+}
+
+function placeCaretAtEnd(el){
+  el.focus();
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+
+editable.addEventListener("input", ()=>{
+  enforceLineLimit();
+  saveDraft();
+});
+editable.addEventListener("paste", ()=>{
+  // after paste, enforce limit
+  setTimeout(()=>{ enforceLineLimit(); saveDraft(); }, 0);
+});
+
+/* Save/Load draft */
+function saveDraft(){
+  const draft = {
+    mode: editorState.mode,
+    storyId: editorState.storyId,
+    coverUrl: coverUrl.value,
+    coverDataUrl: editorState.coverDataUrl,
+    title: storyTitleInput.value,
+    alias: storyAliasInput.value,
+    genre: storyGenreInput.value,
+    html: editable.innerHTML,
+    font: fontSel.value,
+    size: sizeSel.value
+  };
+  localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+}
+function loadDraft(){
+  const raw = localStorage.getItem(DRAFT_KEY);
+  if(!raw) return null;
+  try{ return JSON.parse(raw); }catch{ return null; }
+}
+function clearDraft(){
+  localStorage.removeItem(DRAFT_KEY);
+}
+
+/* Open editor */
+function openEditor({mode, storyId=null}){
+  editorState.mode = mode;
+  editorState.storyId = storyId;
+  editorState.coverDataUrl = "";
+
+  editorModeTitle.textContent = mode === "new" ? "Nuova storia" : "Continua la storia";
+
+  // Reset fields
+  coverUrl.value = "";
+  storyTitleInput.value = "";
+  storyAliasInput.value = "";
+  storyGenreInput.value = "mistero";
+  editable.innerHTML = "";
+  fontSel.value = "system-ui, -apple-system, Segoe UI, sans-serif";
+  sizeSel.value = "16";
+  applyEditorStyle();
+  setCoverPreview("");
+
+  // If continue mode, lock title/genre/cover (takes from story)
+  if(mode === "continue"){
+    const s = stories.find(x=>x.id===storyId);
+    if(s){
+      storyTitleInput.value = s.title;
+      storyAliasInput.value = ""; // contributor name
+      storyGenreInput.value = s.genre || "mistero";
+      setCoverPreview(s.cover || "");
+      // lock title/genre/cover (so only story owner can change in future)
+      storyTitleInput.disabled = true;
+      storyGenreInput.disabled = true;
+      coverUrl.disabled = true;
+      coverPreview.style.pointerEvents = "none";
+      coverPreview.style.opacity = ".85";
+      coverUrl.placeholder = "Copertina bloccata (solo collaboratori/owner)";
+    }
+  } else {
+    storyTitleInput.disabled = false;
+    storyGenreInput.disabled = false;
+    coverUrl.disabled = false;
+    coverPreview.style.pointerEvents = "";
+    coverPreview.style.opacity = "";
+    coverUrl.placeholder = "Link copertina (RAW o URL immagine)";
+  }
+
+  // Try restoring draft only if same mode to avoid confusion
+  const d = loadDraft();
+  if(d && d.mode === mode && (mode==="new" || d.storyId === storyId)){
+    coverUrl.value = d.coverUrl || "";
+    editorState.coverDataUrl = d.coverDataUrl || "";
+    storyTitleInput.value = d.title || storyTitleInput.value;
+    storyAliasInput.value = d.alias || "";
+    storyGenreInput.value = d.genre || storyGenreInput.value;
+    editable.innerHTML = d.html || "";
+    if(d.font) fontSel.value = d.font;
+    if(d.size) sizeSel.value = d.size;
+    applyEditorStyle();
+    const previewSrc = coverUrl.value.trim() || editorState.coverDataUrl || (mode==="continue" ? (stories.find(x=>x.id===storyId)?.cover||"") : "");
+    setCoverPreview(previewSrc);
+  }
+
+  enforceLineLimit();
+  editorOverlay.classList.add("open");
+  document.body.style.overflow="hidden";
+  setTimeout(()=> editable.focus(), 50);
+}
+
+/* Close editor */
+function closeEditor(){
+  editorOverlay.classList.remove("open");
+  document.body.style.overflow="";
+}
+editorBack.addEventListener("click", closeEditor);
+
+/* Create new story */
+document.getElementById("newStoryBtn").addEventListener("click", ()=>{
+  openEditor({mode:"new"});
+});
+
+/* Clear draft */
+clearDraftBtn.addEventListener("click", ()=>{
+  if(confirm("Svuotare la bozza?")){
+    clearDraft();
+    openEditor({mode: editorState.mode, storyId: editorState.storyId});
+  }
+});
+
+/* Publish */
+function validateLines(){
+  const lines = getLineCountFromText(normalizeToPlainTextWithNewlines());
+  return lines <= 30;
+}
+function getFinalCoverForNewStory(){
+  const url = coverUrl.value.trim();
+  if(url) return url;
+  if(editorState.coverDataUrl) return editorState.coverDataUrl;
+  return ""; // allow empty
+}
+function cleanHtml(html){
+  // lightweight sanitize: remove scripts
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html || "";
+  tmp.querySelectorAll("script").forEach(s=>s.remove());
+  return tmp.innerHTML.trim();
+}
+
+publishBtn.addEventListener("click", ()=>{
+  // enforce before publish
+  enforceLineLimit();
+  if(!validateLines()){
+    alert("Hai superato il limite di 30 righe.");
+    return;
+  }
+  const alias = storyAliasInput.value.trim() || "Anonimo";
+  const html = cleanHtml(editable.innerHTML);
+  if(!html || !html.replace(/<[^>]*>/g,"").trim()){
+    alert("Scrivi almeno qualcosa.");
+    return;
+  }
+
+  if(editorState.mode === "new"){
+    const title = storyTitleInput.value.trim();
+    if(!title){ alert("Inserisci un titolo."); return; }
+    const genre = storyGenreInput.value;
+    const cover = getFinalCoverForNewStory();
+    const newStory = {
+      id: uid("s"),
+      title,
+      genre,
+      author: alias,
+      cover,
+      incipitHtml: html,
+      chapters: [],
+      createdAt: Date.now()
+    };
+    stories.unshift(newStory);
+    saveStories();
+    clearDraft();
+    closeEditor();
+    renderRows();
+    openStory(newStory.id);
+    return;
+  }
+
+  if(editorState.mode === "continue"){
+    const s = stories.find(x=>x.id===editorState.storyId);
+    if(!s){ alert("Storia non trovata."); return; }
+    s.chapters = s.chapters || [];
+    s.chapters.unshift({
+      id: uid("c"),
+      author: alias,
+      votes: 0,
+      createdAt: Date.now(),
+      html
+    });
+    saveStories();
+    clearDraft();
+    closeEditor();
+    // refresh story + home
+    storyStats.textContent = `${contCount(s)} continuazioni · ${totalVotes(s)} ❤`;
+    renderChapters();
+    renderRows();
+    return;
+  }
+});
+
+/* ESC handling */
+window.addEventListener("keydown", (e)=>{
+  if(e.key === "Escape"){
+    if(lightbox.classList.contains("open")) lightbox.classList.remove("open");
+    else if(editorOverlay.classList.contains("open")) closeEditor();
+    else if(proOverlay.classList.contains("open")) closePro();
+    else if(storyOverlay.classList.contains("open")) closeStory();
+  }
+});
+
+/* init */
+renderRows();
 </script>
 </body>
 </html>
