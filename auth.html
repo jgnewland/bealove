@@ -1,87 +1,192 @@
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>beabook • login</title>
 
-<script>
-  // 1) CONFIG
-  const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O"; // sb_publishable_...
+  <style>
+    :root{--rose:#B45B63;--bg:#0b0b0d;--panel:#141417;--line:rgba(255,255,255,.14);--txt:#fff;--muted:rgba(255,255,255,.7)}
+    body{margin:0;background:radial-gradient(1200px 700px at 30% -10%, rgba(180,91,99,.35), transparent 60%), var(--bg);color:var(--txt);font-family:system-ui}
+    .wrap{max-width:520px;margin:40px auto;padding:0 16px}
+    .card{background:rgba(20,20,24,.78);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 30px 80px rgba(0,0,0,.55)}
+    h1{margin:0 0 12px}
+    label{font-size:12px;color:var(--muted)}
+    input,textarea{
+      width:100%;padding:11px 12px;border-radius:14px;border:1px solid var(--line);
+      background:#0f0f12;color:#fff;outline:none;margin:6px 0 12px
+    }
+    textarea{height:90px;resize:vertical}
+    .row{display:flex;gap:10px;flex-wrap:wrap}
+    button{border:none;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}
+    .primary{background:var(--rose);color:#fff}
+    .ghost{background:transparent;border:1px solid var(--line);color:#fff}
+    .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
+    .status{margin-top:12px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:#0f0f12;color:#fff;font-size:12px;white-space:pre-wrap}
+    .hidden{display:none}
+    a{color:#fff}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  </style>
+</head>
 
-  // 2) CLIENT
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+<body>
+  <div class="wrap">
+    <div class="top">
+      <h1>Beabook</h1>
+      <a href="index.html">← Torna al sito</a>
+    </div>
 
-  // 3) HELPERS
-  const $ = (id) => document.getElementById(id);
+    <div class="card">
+      <div id="loggedOut">
+        <label>Email</label>
+        <input id="email" type="email" placeholder="tu@email.com" autocomplete="email" />
 
-  function showAuth(){
-    $("auth").classList.remove("hidden");
-    $("profile").classList.add("hidden");
-  }
-  function showProfile(){
-    $("auth").classList.add("hidden");
-    $("profile").classList.remove("hidden");
-  }
+        <label>Password</label>
+        <input id="password" type="password" placeholder="min 6 caratteri" autocomplete="current-password" />
 
-  // 4) ACTIONS
-  async function signup(){
-    const email = $("email").value.trim();
-    const password = $("password").value.trim();
+        <div class="row">
+          <button class="primary" id="signupBtn">Registrati</button>
+          <button class="ghost" id="loginBtn">Login</button>
+        </div>
 
-    if(!email) return alert("Inserisci una email");
-    if(password.length < 6) return alert("Password minimo 6 caratteri");
+        <div class="hint">Se qualcosa non va, leggi “Stato” qui sotto.</div>
+      </div>
 
-    const { data, error } = await sb.auth.signUp({ email, password });
-    if(error) return alert(error.message);
+      <div id="loggedIn" class="hidden">
+        <h1>Profilo</h1>
+        <div class="hint">Loggato come <b id="userEmail"></b></div>
 
-    // se conferma email attiva, sessione è null (sembra che “non vada avanti”)
-    if(!data.session){
-      alert("Registrazione OK ✅\nOra controlla la mail per confermare, poi fai Login.\n(Se vuoi test rapido: disattiva Confirm email su Supabase)");
-      return;
+        <label>Username</label>
+        <input id="username" placeholder="es. bea_writer" />
+
+        <label>Bio</label>
+        <textarea id="bio" placeholder="Chi sei?"></textarea>
+
+        <div class="row">
+          <button class="primary" id="saveBtn">Salva profilo</button>
+          <button class="ghost" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+
+      <div id="status" class="status">Stato: caricamento…</div>
+    </div>
+  </div>
+
+  <!-- ✅ Supabase v2 UMD (oggetto globale: window.supabase) -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+  <script>
+    const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
+    const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
+
+    const $ = (id)=>document.getElementById(id);
+
+    function setStatus(msg){
+      $("status").textContent = msg;
+      console.log("[AUTH]", msg);
+    }
+    function showLoggedIn(email){
+      $("loggedOut").classList.add("hidden");
+      $("loggedIn").classList.remove("hidden");
+      $("userEmail").textContent = email || "";
+    }
+    function showLoggedOut(){
+      $("loggedIn").classList.add("hidden");
+      $("loggedOut").classList.remove("hidden");
     }
 
-    showProfile();
-  }
+    // ✅ controlli anti-pagina-bianca
+    if(!window.supabase){
+      setStatus("ERRORE: libreria Supabase non caricata (window.supabase assente).");
+      throw new Error("Supabase UMD non caricato");
+    }
+    if(!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("INCOLLA")){
+      setStatus("ERRORE: manca la publishable key (sb_publishable_...).");
+      // non blocco: così lo vedi a schermo
+    }
 
-  async function login(){
-    const email = $("email").value.trim();
-    const password = $("password").value.trim();
+    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const { data, error } = await sb.auth.signInWithPassword({ email, password });
-    if(error) return alert(error.message);
+    $("signupBtn").onclick = async ()=>{
+      try{
+        setStatus("Registrazione in corso…");
+        const email = $("email").value.trim();
+        const password = $("password").value.trim();
+        if(!email) return setStatus("Errore: inserisci email.");
+        if(password.length < 6) return setStatus("Errore: password min 6 caratteri.");
 
-    showProfile();
-  }
+        const { data, error } = await sb.auth.signUp({ email, password });
+        if(error) return setStatus("Errore registrazione: " + error.message);
 
-  async function logout(){
-    await sb.auth.signOut();
-    showAuth();
-  }
+        if(!data.session){
+          setStatus("Registrazione OK ✅\nMa non sei loggato: probabilmente è attiva la conferma email.\n(Per test: Supabase → Auth → Providers → Email → Confirm email OFF)");
+          return;
+        }
 
-  async function saveProfile(){
-    const { data: userData, error: userErr } = await sb.auth.getUser();
-    if(userErr) return alert(userErr.message);
-    if(!userData.user) return alert("Devi essere loggato.");
-
-    const payload = {
-      id: userData.user.id,
-      username: $("username").value.trim() || null,
-      bio: $("bio").value.trim() || null
+        showLoggedIn(data.session.user.email);
+        setStatus("Registrazione OK ✅ Sei loggato.");
+      } catch(e){
+        setStatus("Errore: " + e.message);
+      }
     };
 
-    const { error } = await sb.from("profiles").upsert(payload);
-    if(error) return alert(error.message);
+    $("loginBtn").onclick = async ()=>{
+      try{
+        setStatus("Login in corso…");
+        const email = $("email").value.trim();
+        const password = $("password").value.trim();
 
-    alert("Profilo salvato ✅");
-  }
+        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+        if(error) return setStatus("Errore login: " + error.message);
 
-  // 5) INIT
-  (async ()=>{
-    const { data } = await sb.auth.getSession();
-    if(data.session) showProfile();
-    else showAuth();
-  })();
+        showLoggedIn(data.user.email);
+        setStatus("Login OK ✅");
+      } catch(e){
+        setStatus("Errore: " + e.message);
+      }
+    };
 
-  // 6) expose for onclick=""
-  window.signup = signup;
-  window.login = login;
-  window.logout = logout;
-  window.saveProfile = saveProfile;
-</script>
+    $("logoutBtn").onclick = async ()=>{
+      await sb.auth.signOut();
+      showLoggedOut();
+      setStatus("Logout effettuato.");
+    };
+
+    $("saveBtn").onclick = async ()=>{
+      try{
+        setStatus("Salvataggio profilo…");
+        const { data: userData, error: uErr } = await sb.auth.getUser();
+        if(uErr) return setStatus("Errore utente: " + uErr.message);
+        if(!userData.user) return setStatus("Errore: non sei loggato.");
+
+        const payload = {
+          id: userData.user.id,
+          username: $("username").value.trim() || null,
+          bio: $("bio").value.trim() || null,
+        };
+
+        const { error } = await sb.from("profiles").upsert(payload);
+        if(error) return setStatus("Errore profilo: " + error.message);
+
+        setStatus("Profilo salvato ✅");
+      } catch(e){
+        setStatus("Errore: " + e.message);
+      }
+    };
+
+    (async ()=>{
+      setStatus("Controllo sessione…");
+      const { data, error } = await sb.auth.getSession();
+      if(error) return setStatus("Errore sessione: " + error.message);
+
+      if(data.session){
+        showLoggedIn(data.session.user.email);
+        setStatus("Sessione trovata ✅ sei loggato.");
+      }else{
+        showLoggedOut();
+        setStatus("Nessuna sessione: fai Registrati o Login.");
+      }
+    })();
+  </script>
+</body>
+</html>
