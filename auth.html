@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <title>Beabook – Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #0e0e0e;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .box {
+      width: 320px;
+      background: #161616;
+      padding: 24px;
+      border-radius: 14px;
+    }
+    h1 {
+      margin-top: 0;
+      text-align: center;
+    }
+    input, textarea {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+    }
+    button {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: #c45b63;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button.secondary {
+      background: #333;
+      margin-top: 6px;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="box">
+  <h1>Beabook</h1>
+
+  <div id="auth">
+    <input id="email" type="email" placeholder="Email" />
+    <input id="password" type="password" placeholder="Password" />
+    <button onclick="signup()">Registrati</button>
+    <button class="secondary" onclick="login()">Login</button>
+  </div>
+
+  <div id="profile" class="hidden">
+    <input id="username" placeholder="Username" />
+    <textarea id="bio" placeholder="Bio"></textarea>
+    <button onclick="saveProfile()">Salva profilo</button>
+    <button class="secondary" onclick="logout()">Logout</button>
+  </div>
+</div>
+
+<script>
+  const SUPABASE_URL = "https://cjzipuwdviorsqihsmr.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
+
+  const supabase = supabaseJs.createClient(
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY
+  );
+
+  async function signup() {
+    const email = email.value;
+    const password = password.value;
+    await supabase.auth.signUp({ email, password });
+    alert("Registrazione completata");
+  }
+
+  async function login() {
+    const email = email.value;
+    const password = password.value;
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return alert(error.message);
+    showProfile();
+  }
+
+  async function logout() {
+    await supabase.auth.signOut();
+    location.reload();
+  }
+
+  async function showProfile() {
+    auth.classList.add("hidden");
+    profile.classList.remove("hidden");
+  }
+
+  async function saveProfile() {
+    const user = (await supabase.auth.getUser()).data.user;
+    await supabase.from("profiles").upsert({
+      id: user.id,
+      username: username.value,
+      bio: bio.value
+    });
+    alert("Profilo salvato");
+  }
+
+  supabase.auth.onAuthStateChange((event, session) => {
+    if (session) showProfile();
+  });
+</script>
+
+</body>
+</html>
