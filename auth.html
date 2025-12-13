@@ -3,190 +3,329 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>beabook • login</title>
-
+  <title>beabook • accesso</title>
   <style>
-    :root{--rose:#B45B63;--bg:#0b0b0d;--panel:#141417;--line:rgba(255,255,255,.14);--txt:#fff;--muted:rgba(255,255,255,.7)}
-    body{margin:0;background:radial-gradient(1200px 700px at 30% -10%, rgba(180,91,99,.35), transparent 60%), var(--bg);color:var(--txt);font-family:system-ui}
-    .wrap{max-width:520px;margin:40px auto;padding:0 16px}
-    .card{background:rgba(20,20,24,.78);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:0 30px 80px rgba(0,0,0,.55)}
-    h1{margin:0 0 12px}
-    label{font-size:12px;color:var(--muted)}
-    input,textarea{
-      width:100%;padding:11px 12px;border-radius:14px;border:1px solid var(--line);
-      background:#0f0f12;color:#fff;outline:none;margin:6px 0 12px
+    :root{
+      --rose:#B45B63;
+      --rose2:#C56A72;
+      --bg0:#070708;
+      --bg1:#0B0B0C;
+      --line:rgba(255,255,255,.12);
+      --txt:#fff;
+      --muted:rgba(255,255,255,.70);
+      --shadow: 0 26px 80px rgba(0,0,0,.55);
+      --radius:18px;
+      --font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    textarea{height:90px;resize:vertical}
-    .row{display:flex;gap:10px;flex-wrap:wrap}
-    button{border:none;border-radius:999px;padding:10px 14px;font-weight:800;cursor:pointer}
-    .primary{background:var(--rose);color:#fff}
-    .ghost{background:transparent;border:1px solid var(--line);color:#fff}
-    .hint{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5}
-    .status{margin-top:12px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:#0f0f12;color:#fff;font-size:12px;white-space:pre-wrap}
-    .hidden{display:none}
-    a{color:#fff}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--txt);
+      background:
+        radial-gradient(1100px 700px at 15% 10%, rgba(180,91,99,.28), transparent 60%),
+        radial-gradient(900px 600px at 80% 20%, rgba(180,91,99,.16), transparent 65%),
+        linear-gradient(180deg, var(--bg0), var(--bg1) 55%, var(--bg0));
+      display:grid;
+      place-items:center;
+      padding:18px;
+    }
+    a{color:inherit}
+    .card{
+      width:min(640px, 100%);
+      border:1px solid var(--line);
+      border-radius:22px;
+      background: rgba(12,12,14,.65);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding:14px 16px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.25);
+    }
+    .brand{display:flex;align-items:center;gap:10px}
+    .brand img{height:34px;display:block}
+    .back{
+      font-weight:800;
+      color:rgba(255,255,255,.85);
+    }
+    .content{padding:16px}
+    h1{margin:0 0 10px;font-size:26px;letter-spacing:-.02em}
+    p{margin:0 0 14px;color:var(--muted);font-size:13px;line-height:1.45}
+    .grid{display:grid;gap:10px}
+    label{font-size:12px;color:rgba(255,255,255,.7)}
+    input,textarea{
+      width:100%;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      color:#fff;
+      padding:10px;
+      outline:none;
+      font-size:13px;
+    }
+    textarea{min-height:90px;resize:vertical}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+    .btn{
+      border:none; cursor:pointer;
+      border-radius:999px;
+      padding:10px 14px;
+      font-size:13px;
+      font-weight:900;
+      color:#0e0e10;
+      background: linear-gradient(135deg, #fff, rgba(255,255,255,.85));
+    }
+    .btn.primary{
+      background: linear-gradient(135deg, var(--rose), var(--rose2));
+      color:#fff;
+      box-shadow: 0 20px 70px rgba(180,91,99,.25);
+    }
+    .btn.ghost{
+      border:1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.06);
+      color:#fff;
+    }
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .box{
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.04);
+      border-radius:18px;
+      padding:12px;
+    }
+    .status{
+      margin-top:12px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.18);
+      color:rgba(255,255,255,.85);
+      font-size:12px;
+      white-space:pre-wrap;
+    }
+    .avatarRow{display:flex;gap:12px;align-items:flex-start}
+    .avatar{
+      width:92px;height:92px;
+      border-radius:16px;
+      border:1px dashed rgba(255,255,255,.22);
+      background: rgba(255,255,255,.03);
+      overflow:hidden;
+      display:grid;place-items:center;
+      color:rgba(255,255,255,.65);
+      font-size:12px;
+      flex:0 0 auto;
+    }
+    .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+    @media (max-width:680px){ .split{grid-template-columns:1fr} }
   </style>
 </head>
-
 <body>
-  <div class="wrap">
+
+  <div class="card">
     <div class="top">
-      <h1>Beabook</h1>
-      <a href="index.html">← Torna al sito</a>
+      <div class="brand">
+        <img alt="beabook" src="https://raw.githubusercontent.com/jgnewland/bealove/main/LOGO%20BEABOOK.png">
+      </div>
+      <a class="back" href="./index.html">← Torna al sito</a>
     </div>
 
-    <div class="card">
-      <div id="loggedOut">
-        <label>Email</label>
-        <input id="email" type="email" placeholder="tu@email.com" autocomplete="email" />
+    <div class="content">
+      <div id="authView">
+        <h1>Accesso</h1>
+        <p>Registrati o fai login. Poi completi il profilo (username, bio e foto).</p>
 
-        <label>Password</label>
-        <input id="password" type="password" placeholder="min 6 caratteri" autocomplete="current-password" />
+        <div class="split">
+          <div class="box">
+            <div class="grid">
+              <div>
+                <label>Email</label>
+                <input id="email" type="email" placeholder="nome@email.com" />
+              </div>
+              <div>
+                <label>Password</label>
+                <input id="password" type="password" placeholder="••••••••" />
+              </div>
+            </div>
 
-        <div class="row">
-          <button class="primary" id="signupBtn">Registrati</button>
-          <button class="ghost" id="loginBtn">Login</button>
+            <div class="row">
+              <button class="btn primary" id="signupBtn">Registrati</button>
+              <button class="btn ghost" id="loginBtn">Login</button>
+            </div>
+
+            <div class="status" id="statusAuth">Pronto.</div>
+          </div>
+
+          <div class="box">
+            <h3 style="margin:0 0 8px;letter-spacing:.1em;text-transform:uppercase;font-size:12px;color:rgba(255,255,255,.75)">Note</h3>
+            <p style="margin:0;color:rgba(255,255,255,.7);font-size:12px;line-height:1.55">
+              Se hai <b>Confirm email</b> ON, dopo “Registrati” devi aprire la mail e confermare,
+              poi fare login.
+            </p>
+          </div>
         </div>
-
-        <div class="hint">Se qualcosa non va, leggi “Stato” qui sotto.</div>
       </div>
 
-      <div id="loggedIn" class="hidden">
+      <div id="profileView" style="display:none">
         <h1>Profilo</h1>
-        <div class="hint">Loggato come <b id="userEmail"></b></div>
+        <p id="who" style="margin-top:-6px"></p>
 
-        <label>Username</label>
-        <input id="username" placeholder="es. bea_writer" />
+        <div class="box">
+          <div class="avatarRow">
+            <div class="avatar" id="avatarBox">foto</div>
+            <div class="grid" style="flex:1">
+              <div>
+                <label>Username</label>
+                <input id="username" placeholder="es. il_mio_alias" />
+              </div>
+              <div>
+                <label>Bio</label>
+                <textarea id="bio" placeholder="Due righe su di te…"></textarea>
+              </div>
+              <div>
+                <label>Foto profilo</label>
+                <input id="avatarFile" type="file" accept="image/*" />
+                <div style="color:rgba(255,255,255,.6);font-size:12px;margin-top:6px">
+                  (viene caricata su Supabase Storage)
+                </div>
+              </div>
 
-        <label>Bio</label>
-        <textarea id="bio" placeholder="Chi sei?"></textarea>
+              <div class="row">
+                <button class="btn primary" id="saveProfileBtn">Salva profilo</button>
+                <button class="btn ghost" id="logoutBtn">Logout</button>
+              </div>
 
-        <div class="row">
-          <button class="primary" id="saveBtn">Salva profilo</button>
-          <button class="ghost" id="logoutBtn">Logout</button>
+              <div class="status" id="statusProfile">Pronto.</div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <div id="status" class="status">Stato: caricamento…</div>
+      </div>
     </div>
   </div>
 
-  <!-- ✅ Supabase v2 UMD (oggetto globale: window.supabase) -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
-
+  <!-- Supabase JS -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
-    const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
+    // ====== INCOLLA QUI I TUOI DATI ======
+    const SUPABASE_URL = "INCOLLA_SUPABASE_URL";
+    const SUPABASE_ANON_KEY = "INCOLLA_SUPABASE_ANON_KEY";
+    // ====================================
+
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const $ = (id)=>document.getElementById(id);
 
-    function setStatus(msg){
-      $("status").textContent = msg;
-      console.log("[AUTH]", msg);
-    }
-    function showLoggedIn(email){
-      $("loggedOut").classList.add("hidden");
-      $("loggedIn").classList.remove("hidden");
-      $("userEmail").textContent = email || "";
-    }
-    function showLoggedOut(){
-      $("loggedIn").classList.add("hidden");
-      $("loggedOut").classList.remove("hidden");
-    }
+    const authView = $("authView");
+    const profileView = $("profileView");
+    const statusAuth = $("statusAuth");
+    const statusProfile = $("statusProfile");
+    const avatarBox = $("avatarBox");
 
-    // ✅ controlli anti-pagina-bianca
-    if(!window.supabase){
-      setStatus("ERRORE: libreria Supabase non caricata (window.supabase assente).");
-      throw new Error("Supabase UMD non caricato");
-    }
-    if(!SUPABASE_ANON_KEY || SUPABASE_ANON_KEY.includes("INCOLLA")){
-      setStatus("ERRORE: manca la publishable key (sb_publishable_...).");
-      // non blocco: così lo vedi a schermo
-    }
+    function setStatus(el, msg){ el.textContent = msg; }
 
-    const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    async function refreshUI(){
+      const { data: { user } } = await supabase.auth.getUser();
+      if(!user){
+        authView.style.display = "";
+        profileView.style.display = "none";
+        return;
+      }
+      authView.style.display = "none";
+      profileView.style.display = "";
+      $("who").textContent = `Loggato come ${user.email}`;
 
-    $("signupBtn").onclick = async ()=>{
-      try{
-        setStatus("Registrazione in corso…");
-        const email = $("email").value.trim();
-        const password = $("password").value.trim();
-        if(!email) return setStatus("Errore: inserisci email.");
-        if(password.length < 6) return setStatus("Errore: password min 6 caratteri.");
-
-        const { data, error } = await sb.auth.signUp({ email, password });
-        if(error) return setStatus("Errore registrazione: " + error.message);
-
-        if(!data.session){
-          setStatus("Registrazione OK ✅\nMa non sei loggato: probabilmente è attiva la conferma email.\n(Per test: Supabase → Auth → Providers → Email → Confirm email OFF)");
-          return;
+      // carica profilo
+      const { data, error } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
+      if(error){
+        setStatus(statusProfile, "Errore lettura profilo: " + error.message);
+        return;
+      }
+      if(data){
+        $("username").value = data.username || "";
+        $("bio").value = data.bio || "";
+        if(data.avatar_url){
+          avatarBox.innerHTML = `<img alt="avatar" src="${data.avatar_url}">`;
+        }else{
+          avatarBox.textContent = "foto";
         }
-
-        showLoggedIn(data.session.user.email);
-        setStatus("Registrazione OK ✅ Sei loggato.");
-      } catch(e){
-        setStatus("Errore: " + e.message);
-      }
-    };
-
-    $("loginBtn").onclick = async ()=>{
-      try{
-        setStatus("Login in corso…");
-        const email = $("email").value.trim();
-        const password = $("password").value.trim();
-
-        const { data, error } = await sb.auth.signInWithPassword({ email, password });
-        if(error) return setStatus("Errore login: " + error.message);
-
-        showLoggedIn(data.user.email);
-        setStatus("Login OK ✅");
-      } catch(e){
-        setStatus("Errore: " + e.message);
-      }
-    };
-
-    $("logoutBtn").onclick = async ()=>{
-      await sb.auth.signOut();
-      showLoggedOut();
-      setStatus("Logout effettuato.");
-    };
-
-    $("saveBtn").onclick = async ()=>{
-      try{
-        setStatus("Salvataggio profilo…");
-        const { data: userData, error: uErr } = await sb.auth.getUser();
-        if(uErr) return setStatus("Errore utente: " + uErr.message);
-        if(!userData.user) return setStatus("Errore: non sei loggato.");
-
-        const payload = {
-          id: userData.user.id,
-          username: $("username").value.trim() || null,
-          bio: $("bio").value.trim() || null,
-        };
-
-        const { error } = await sb.from("profiles").upsert(payload);
-        if(error) return setStatus("Errore profilo: " + error.message);
-
-        setStatus("Profilo salvato ✅");
-      } catch(e){
-        setStatus("Errore: " + e.message);
-      }
-    };
-
-    (async ()=>{
-      setStatus("Controllo sessione…");
-      const { data, error } = await sb.auth.getSession();
-      if(error) return setStatus("Errore sessione: " + error.message);
-
-      if(data.session){
-        showLoggedIn(data.session.user.email);
-        setStatus("Sessione trovata ✅ sei loggato.");
       }else{
-        showLoggedOut();
-        setStatus("Nessuna sessione: fai Registrati o Login.");
+        setStatus(statusProfile, "Profilo non trovato: compila e salva.");
       }
-    })();
+    }
+
+    $("signupBtn").addEventListener("click", async ()=>{
+      setStatus(statusAuth, "Registrazione in corso…");
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      const { error } = await supabase.auth.signUp({ email, password });
+      if(error) return setStatus(statusAuth, "Errore: " + error.message);
+      setStatus(statusAuth, "Registrazione OK ✅\nSe non entri subito: controlla conferma email in Supabase/Auth.");
+      await refreshUI();
+    });
+
+    $("loginBtn").addEventListener("click", async ()=>{
+      setStatus(statusAuth, "Login in corso…");
+      const email = $("email").value.trim();
+      const password = $("password").value;
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if(error) return setStatus(statusAuth, "Errore: " + error.message);
+      setStatus(statusAuth, "Login OK ✅");
+      await refreshUI();
+    });
+
+    $("logoutBtn").addEventListener("click", async ()=>{
+      await supabase.auth.signOut();
+      await refreshUI();
+    });
+
+    async function uploadAvatar(userId, file){
+      // bucket: avatars
+      const ext = (file.name.split(".").pop() || "jpg").toLowerCase();
+      const path = `${userId}/${Date.now()}.${ext}`;
+
+      const { error: upErr } = await supabase.storage.from("avatars").upload(path, file, { upsert: true });
+      if(upErr) throw upErr;
+
+      const { data } = supabase.storage.from("avatars").getPublicUrl(path);
+      return data.publicUrl;
+    }
+
+    $("saveProfileBtn").addEventListener("click", async ()=>{
+      setStatus(statusProfile, "Salvataggio…");
+      const { data: { user } } = await supabase.auth.getUser();
+      if(!user) return setStatus(statusProfile, "Non sei loggato.");
+
+      let avatar_url = null;
+      const f = $("avatarFile").files?.[0];
+      if(f){
+        try{
+          avatar_url = await uploadAvatar(user.id, f);
+        }catch(e){
+          return setStatus(statusProfile, "Upload avatar fallito: " + (e?.message || e));
+        }
+      }
+
+      const payload = {
+        id: user.id,
+        username: $("username").value.trim(),
+        bio: $("bio").value.trim(),
+      };
+      if(avatar_url) payload.avatar_url = avatar_url;
+
+      const { error } = await supabase.from("profiles").upsert(payload);
+      if(error) return setStatus(statusProfile, "Errore: " + error.message);
+
+      setStatus(statusProfile, "Profilo salvato ✅");
+      await refreshUI();
+    });
+
+    supabase.auth.onAuthStateChange(()=>refreshUI());
+    refreshUI();
   </script>
 </body>
 </html>
