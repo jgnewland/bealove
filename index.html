@@ -1755,9 +1755,9 @@ renderRows();
 
 // 🔥 INCOLLA QUI I TUOI DATI
 const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqemppcHV3ZHZpb3Jxc2loc21yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NTQ0MzMsImV4cCI6MjA4MTEzMDQzM30.sLjl7lDANmdCbXCAjT5__gIVDLPPUOT5Rr5MxzdNdOM";
 
-const sb = window.supabase.createClient(https://cjzjipuwdviorqsihsmr.supabase.co, sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const bbUserBadge = document.getElementById("bbUserBadge");
 const bbLoginBtn  = document.getElementById("bbLoginBtn");
@@ -1866,7 +1866,21 @@ sb.auth.onAuthStateChange(()=>bbFetch());
   const bbLogoutBtn = document.getElementById("bbLogoutBtn");
 
   async function refreshAuthUI(){
-    const { data: { user } } = await sb.auth.getUser();
+  const { data: { session } } = await sb.auth.getSession();
+  const user = session?.user || null;
+
+  if(!user){
+    bbUserBadge.textContent = "";
+    bbLoginBtn.style.display = "";
+    bbLogoutBtn.style.display = "none";
+    return;
+  }
+
+  const display = user.email || "utente";
+  bbUserBadge.textContent = "Ciao, " + display;
+  bbLoginBtn.style.display = "none";
+  bbLogoutBtn.style.display = "";
+};
 
     if(!user){
       if (bbUserBadge) bbUserBadge.textContent = "";
