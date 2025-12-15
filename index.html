@@ -1852,5 +1852,54 @@ if (typeof window.openEditor === "function"){
 // init + listener
 bbFetch();
 sb.auth.onAuthStateChange(()=>bbFetch());
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // ✅ INCOLLA QUI I TUOI DATI
+  const SUPABASE_URL = "https://TUO-PROJECT.supabase.co";
+  const SUPABASE_ANON_KEY = "TUO_ANON_KEY";
+
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  const bbUserBadge = document.getElementById("bbUserBadge");
+  const bbLoginBtn  = document.getElementById("bbLoginBtn");
+  const bbLogoutBtn = document.getElementById("bbLogoutBtn");
+
+  async function refreshAuthUI(){
+    const { data: { user } } = await sb.auth.getUser();
+
+    if(!user){
+      if (bbUserBadge) bbUserBadge.textContent = "";
+      if (bbLoginBtn)  bbLoginBtn.style.display = "";
+      if (bbLogoutBtn) bbLogoutBtn.style.display = "none";
+      return;
+    }
+
+    const name =
+      user.user_metadata?.username ||
+      user.user_metadata?.name ||
+      (user.email ? user.email.split("@")[0] : "utente");
+
+    if (bbUserBadge) bbUserBadge.textContent = "Ciao, " + name;
+    if (bbLoginBtn)  bbLoginBtn.style.display = "none";
+    if (bbLogoutBtn) bbLogoutBtn.style.display = "";
+  }
+
+  function goLogin(){
+    // ✅ GitHub Pages: assicurati che auth.html sia nella stessa cartella di index.html
+    window.location.href = "./auth.html";
+  }
+
+  if (bbLoginBtn) bbLoginBtn.addEventListener("click", goLogin);
+
+  if (bbLogoutBtn) bbLogoutBtn.addEventListener("click", async ()=>{
+    await sb.auth.signOut();
+    await refreshAuthUI();
+  });
+
+  refreshAuthUI();
+  sb.auth.onAuthStateChange(() => refreshAuthUI());
+</script>
+
 </script>
 
