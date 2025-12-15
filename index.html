@@ -739,7 +739,8 @@
       <!-- ✅ CTA CON AUTH -->
       <div class="cta">
         <span id="bbUserBadge" style="color:rgba(255,255,255,.75);font-size:12px;margin-right:6px"></span>
-        <button class="btn ghost" id="bbLoginBtn">Accedi</button>
+        <a class="btn ghost" id="bbLoginBtn" href="./auth.html">Accedi</a>
+
         <button class="btn ghost" id="bbLogoutBtn" style="display:none">Logout</button>
 
         <button class="btn ghost" id="randomBtn">🎲 Random</button>
@@ -1799,11 +1800,10 @@ async function bbInit(){
 }
 
 /* LOGIN / LOGOUT */
-bbLoginBtn.onclick = ()=> location.href = "auth.html";
-bbLogoutBtn.onclick = async ()=>{
-  await sb.auth.signOut();
-  await bbInit();
-};
+bbLoginBtn.addEventListener("click", () => {
+  console.log("Login button clicked.");
+  window.open("./auth.html", "_self");
+});
 
 /* AUTH GUARD */
 async function requireAuth(){
