@@ -1897,8 +1897,10 @@ sb.auth.onAuthStateChange(()=>bbFetch());
     await refreshAuthUI();
   });
 
-  refreshAuthUI();
-  sb.auth.onAuthStateChange(() => refreshAuthUI());
+  window.addEventListener("pageshow", () => refreshAuthUI());   // ← IMPORTANTISSIMO per Back
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) refreshAuthUI();
+});
 </script>
 
 </script>
