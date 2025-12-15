@@ -1646,11 +1646,6 @@ function closeEditor(){
 }
 editorBack.addEventListener("click", closeEditor);
 
-/* Create new story */
-document.getElementById("newStoryBtn").addEventListener("click", ()=>{
-  openEditor({mode:"new"});
-});
-
 /* Clear draft */
 clearDraftBtn.addEventListener("click", ()=>{
   if(confirm("Svuotare la bozza?")){
@@ -1753,13 +1748,108 @@ renderRows();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
 /* =========================
-   BEABOOK AUTH BRIDGE
+   BEABOOK AUTH (STABILE)
 ========================= */
 
-// 🔥 INCOLLA QUI I TUOI DATI
+// ⛔️ TU DEVI SOLO INCOLLARE QUI
 const SUPABASE_URL = "INCOLLA_SUPABASE_URL";
 const SUPABASE_ANON_KEY = "INCOLLA_SUPABASE_ANON_KEY";
+
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const bbUserBadge = document.getElementById("bbUserBadge");
+const bbLoginBtn  = document.getElementById("bbLoginBtn");
+const bbLogoutBtn = document.getElementById("bbLogoutBtn");
+
+let bbUser = null;
+let bbDisplayName = "";
+
+/* INIT SESSION */
+async function bbInit(){
+  const { data:{ session } } = await sb.auth.getSession();
+
+  if(!session){
+    bbUser = null;
+    bbDisplayName = "";
+    bbUserBadge.textContent = "";
+    bbLoginBtn.style.display = "";
+    bbLogoutBtn.style.display = "none";
+    return;
+  }
+
+  bbUser = session.user;
+
+  const { data: profile } = await sb
+    .from("profiles")
+    .select("username")
+    .eq("id", bbUser.id)
+    .single();
+
+  bbDisplayName =
+    profile?.username ||
+    bbUser.email?.split("@")[0] ||
+    "utente";
+
+  bbUserBadge.textContent = "Ciao, " + bbDisplayName;
+  bbLoginBtn.style.display = "none";
+  bbLogoutBtn.style.display = "";
+}
+
+/* LOGIN / LOGOUT */
+bbLoginBtn.onclick = ()=> location.href = "auth.html";
+bbLogoutBtn.onclick = async ()=>{
+  await sb.auth.signOut();
+  await bbInit();
+};
+
+/* AUTH GUARD */
+async function requireAuth(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(!session){
+    location.href = "auth.html";
+    return false;
+  }
+  return true;
+}
+
+/* NEW STORY */
+document.getElementById("newStoryBtn").onclick = async ()=>{
+  if(!await requireAuth()) return;
+
+  await bbInit();
+  openEditor({ mode:"new" });
+
+  setTimeout(()=>{
+    const a = document.getElementById("storyAliasInput");
+    if(a && !a.value) a.value = bbDisplayName;
+  },50);
+};
+
+/* CONTINUA STORIA */
+document.getElementById("continueBtn").onclick = async ()=>{
+  if(!await requireAuth()) return;
+
+  await bbInit();
+  openEditor({ mode:"continue", storyId: currentStoryId });
+
+  setTimeout(()=>{
+    const a = document.getElementById("storyAliasInput");
+    if(a && !a.value) a.value = bbDisplayName;
+  },50);
+};
+
+/* LISTENER */
+sb.auth.onAuthStateChange(()=> bbInit());
+bbInit();
+</script>
+
+
+// 🔥 INCOLLA QUI I TUOI DATI
+const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
