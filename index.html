@@ -736,7 +736,12 @@
         </div>
       </div>
 
+      <!-- ✅ CTA CON AUTH -->
       <div class="cta">
+        <span id="bbUserBadge" style="color:rgba(255,255,255,.75);font-size:12px;margin-right:6px"></span>
+        <button class="btn ghost" id="bbLoginBtn">Accedi</button>
+        <button class="btn ghost" id="bbLogoutBtn" style="display:none">Logout</button>
+
         <button class="btn ghost" id="randomBtn">🎲 Random</button>
         <button class="btn primary" id="newStoryBtn">✍️ Crea nuova storia</button>
       </div>
@@ -1375,7 +1380,7 @@ function voteChapter(cid){
   saveStories();
   storyStats.textContent = `${contCount(s)} continuazioni · ${totalVotes(s)} ❤`;
   renderChapters();
-  renderRows(); // aggiorna home
+  renderRows();
 }
 
 chapSort.addEventListener("change", renderChapters);
@@ -1393,7 +1398,7 @@ storyCoverClick.addEventListener("click", ()=>{
 });
 lightbox.addEventListener("click", ()=> lightbox.classList.remove("open"));
 
-/* Continue story -> open editor in continuation mode */
+/* Continue story -> open editor */
 continueBtn.addEventListener("click", ()=>{
   if(!currentStoryId) return;
   openEditor({mode:"continue", storyId: currentStoryId});
@@ -1446,14 +1451,14 @@ const sizeSel = document.getElementById("sizeSel");
 const clearDraftBtn = document.getElementById("clearDraft");
 
 let editorState = {
-  mode: "new",      // "new" | "continue"
+  mode: "new",
   storyId: null,
-  coverDataUrl: "", // for new story if uploaded
+  coverDataUrl: "",
 };
 
 const DRAFT_KEY = "beabook_editor_draft_v1";
 
-/* Toolbar commands */
+/* Toolbar */
 document.querySelectorAll(".toolbtn[data-cmd]").forEach(btn=>{
   btn.addEventListener("click", ()=>{
     const cmd = btn.dataset.cmd;
@@ -1463,7 +1468,6 @@ document.querySelectorAll(".toolbtn[data-cmd]").forEach(btn=>{
   });
 });
 
-/* Font + size apply */
 function applyEditorStyle(){
   editable.style.fontFamily = fontSel.value;
   editable.style.fontSize = `${parseInt(sizeSel.value,10)}px`;
@@ -1489,7 +1493,7 @@ coverFile.addEventListener("change", ()=>{
 coverUrl.addEventListener("input", ()=>{
   const url = coverUrl.value.trim();
   if(url){
-    editorState.coverDataUrl = ""; // prefer URL (not data)
+    editorState.coverDataUrl = "";
     setCoverPreview(url);
   }else{
     setCoverPreview("");
@@ -1507,15 +1511,13 @@ function setCoverPreview(src){
   coverPreview.innerHTML = `<img alt="preview" src="${src}"><div class="coverHint">clicca per cambiare copertina</div>`;
 }
 
-/* Line limit: max 30 lines */
+/* Line limit */
 function getLineCountFromText(text){
   const t = (text || "").replace(/\r/g,"");
   if(!t.trim()) return 0;
   return t.split("\n").length;
 }
 function normalizeToPlainTextWithNewlines(){
-  // Convert HTML to plain text while preserving line breaks reasonably
-  // We'll read innerText (browser gives line breaks as newlines)
   return editable.innerText.replace(/\r/g,"");
 }
 function enforceLineLimit(){
@@ -1525,17 +1527,13 @@ function enforceLineLimit(){
 
   if(lines >= 30){
     limitMsg.classList.add("show");
-    // hard trim to first 30 lines preserving basic formatting by rebuilding plain text
     const cut = txt.split("\n").slice(0,30).join("\n");
-    // Set plain text (formatting will reset). For usability we keep formatting while typing up to 30.
-    // If user hits 31st line we freeze input by reverting to trimmed plain text.
     editable.innerText = cut;
     placeCaretAtEnd(editable);
     return;
   }
   limitMsg.classList.remove("show");
 }
-
 function placeCaretAtEnd(el){
   el.focus();
   const range = document.createRange();
@@ -1551,11 +1549,10 @@ editable.addEventListener("input", ()=>{
   saveDraft();
 });
 editable.addEventListener("paste", ()=>{
-  // after paste, enforce limit
   setTimeout(()=>{ enforceLineLimit(); saveDraft(); }, 0);
 });
 
-/* Save/Load draft */
+/* Draft */
 function saveDraft(){
   const draft = {
     mode: editorState.mode,
@@ -1588,7 +1585,6 @@ function openEditor({mode, storyId=null}){
 
   editorModeTitle.textContent = mode === "new" ? "Nuova storia" : "Continua la storia";
 
-  // Reset fields
   coverUrl.value = "";
   storyTitleInput.value = "";
   storyAliasInput.value = "";
@@ -1599,15 +1595,13 @@ function openEditor({mode, storyId=null}){
   applyEditorStyle();
   setCoverPreview("");
 
-  // If continue mode, lock title/genre/cover (takes from story)
   if(mode === "continue"){
     const s = stories.find(x=>x.id===storyId);
     if(s){
       storyTitleInput.value = s.title;
-      storyAliasInput.value = ""; // contributor name
+      storyAliasInput.value = "";
       storyGenreInput.value = s.genre || "mistero";
       setCoverPreview(s.cover || "");
-      // lock title/genre/cover (so only story owner can change in future)
       storyTitleInput.disabled = true;
       storyGenreInput.disabled = true;
       coverUrl.disabled = true;
@@ -1624,7 +1618,6 @@ function openEditor({mode, storyId=null}){
     coverUrl.placeholder = "Link copertina (RAW o URL immagine)";
   }
 
-  // Try restoring draft only if same mode to avoid confusion
   const d = loadDraft();
   if(d && d.mode === mode && (mode==="new" || d.storyId === storyId)){
     coverUrl.value = d.coverUrl || "";
@@ -1675,10 +1668,9 @@ function getFinalCoverForNewStory(){
   const url = coverUrl.value.trim();
   if(url) return url;
   if(editorState.coverDataUrl) return editorState.coverDataUrl;
-  return ""; // allow empty
+  return "";
 }
 function cleanHtml(html){
-  // lightweight sanitize: remove scripts
   const tmp = document.createElement("div");
   tmp.innerHTML = html || "";
   tmp.querySelectorAll("script").forEach(s=>s.remove());
@@ -1686,7 +1678,6 @@ function cleanHtml(html){
 }
 
 publishBtn.addEventListener("click", ()=>{
-  // enforce before publish
   enforceLineLimit();
   if(!validateLines()){
     alert("Hai superato il limite di 30 righe.");
@@ -1737,7 +1728,6 @@ publishBtn.addEventListener("click", ()=>{
     saveStories();
     clearDraft();
     closeEditor();
-    // refresh story + home
     storyStats.textContent = `${contCount(s)} continuazioni · ${totalVotes(s)} ❤`;
     renderChapters();
     renderRows();
@@ -1758,5 +1748,117 @@ window.addEventListener("keydown", (e)=>{
 /* init */
 renderRows();
 </script>
+
+<!-- ✅ SUPABASE -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+/* =========================
+   BEABOOK AUTH BRIDGE
+========================= */
+
+// 🔥 INCOLLA QUI I TUOI DATI
+const SUPABASE_URL = "INCOLLA_SUPABASE_URL";
+const SUPABASE_ANON_KEY = "INCOLLA_SUPABASE_ANON_KEY";
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const bbUserBadge = document.getElementById("bbUserBadge");
+const bbLoginBtn  = document.getElementById("bbLoginBtn");
+const bbLogoutBtn = document.getElementById("bbLogoutBtn");
+
+let bbUser = null;
+let bbProfile = null;
+let bbDisplayName = "";
+
+async function bbFetch(){
+  const { data: { user } } = await sb.auth.getUser();
+  bbUser = user || null;
+
+  if(!bbUser){
+    bbProfile = null;
+    bbDisplayName = "";
+    bbUserBadge.textContent = "";
+    bbLoginBtn.style.display = "";
+    bbLogoutBtn.style.display = "none";
+    return;
+  }
+
+  // legge username dalla tabella profiles (id = auth.users.id)
+  const { data: profile } = await sb
+    .from("profiles")
+    .select("username")
+    .eq("id", bbUser.id)
+    .maybeSingle();
+
+  bbProfile = profile || null;
+  bbDisplayName = (bbProfile && bbProfile.username) ? bbProfile.username : (bbUser.email || "utente");
+
+  bbUserBadge.textContent = "Ciao, " + bbDisplayName;
+  bbLoginBtn.style.display = "none";
+  bbLogoutBtn.style.display = "";
+}
+
+async function bbRequireAuth(){
+  const { data: { session } } = await sb.auth.getSession();
+  if(!session){
+    window.location.href = "./auth.html";
+    return false;
+  }
+  return true;
+}
+
+// login/logout
+bbLoginBtn.addEventListener("click", ()=> window.location.href = "./auth.html");
+bbLogoutBtn.addEventListener("click", async ()=>{
+  await sb.auth.signOut();
+  await bbFetch();
+  alert("Logout effettuato.");
+});
+
+// precompila alias in editor
+function bbFillAlias(){
+  const aliasInput = document.getElementById("storyAliasInput");
+  if(!aliasInput) return;
+  if(!aliasInput.value.trim()){
+    aliasInput.value = bbDisplayName || "";
+  }
+}
+
+// WRAP openEditor -> richiede login
+const _openEditor = window.openEditor;
+window.openEditor = async function(params){
+  const ok = await bbRequireAuth();
+  if(!ok) return;
+
+  await bbFetch();
+  _openEditor(params);
+
+  setTimeout(bbFillAlias, 60);
+};
+
+// Proteggi i click già bindati
+document.getElementById("newStoryBtn").addEventListener("click", async (e)=>{
+  e.stopImmediatePropagation();
+  const ok = await bbRequireAuth();
+  if(!ok) return;
+  await bbFetch();
+  window.openEditor({mode:"new"});
+}, true);
+
+document.getElementById("continueBtn").addEventListener("click", async (e)=>{
+  e.stopImmediatePropagation();
+  const ok = await bbRequireAuth();
+  if(!ok) return;
+  await bbFetch();
+  if(window.currentStoryId) window.openEditor({mode:"continue", storyId: window.currentStoryId});
+}, true);
+
+// init + listener
+bbFetch();
+sb.auth.onAuthStateChange(()=>bbFetch());
+
+</script>
+
 </body>
 </html>
