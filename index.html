@@ -1927,22 +1927,28 @@ window.openEditor = async function(params){
   setTimeout(bbFillAlias, 60);
 };
 
-// Proteggi i click già bindati
 document.getElementById("newStoryBtn").addEventListener("click", async (e)=>{
-  e.stopImmediatePropagation();
+  e.preventDefault();
+
   const ok = await bbRequireAuth();
   if(!ok) return;
+
   await bbFetch();
   window.openEditor({mode:"new"});
-}, true);
+});
 
 document.getElementById("continueBtn").addEventListener("click", async (e)=>{
-  e.stopImmediatePropagation();
+  e.preventDefault();
+
   const ok = await bbRequireAuth();
   if(!ok) return;
+
   await bbFetch();
-  if(window.currentStoryId) window.openEditor({mode:"continue", storyId: window.currentStoryId});
-}, true);
+  if(window.currentStoryId){
+    window.openEditor({mode:"continue", storyId: window.currentStoryId});
+  }
+});
+
 
 // init + listener
 bbFetch();
