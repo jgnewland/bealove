@@ -1749,99 +1749,108 @@ renderRows();
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
 /* =========================
-   BEABOOK AUTH (STABILE)
+   BEABOOK AUTH (INDEX)
 ========================= */
 
-// ⛔️ TU DEVI SOLO INCOLLARE QUI
-const SUPABASE_URL = "INCOLLA_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "INCOLLA_SUPABASE_ANON_KEY";
+// 🔥 INCOLLA QUI I TUOI DATI
+const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
 
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const bbUserBadge = document.getElementById("bbUserBadge");
 const bbLoginBtn  = document.getElementById("bbLoginBtn");
 const bbLogoutBtn = document.getElementById("bbLogoutBtn");
 
 let bbUser = null;
+let bbProfile = null;
 let bbDisplayName = "";
 
-/* INIT SESSION */
-async function bbInit(){
-  const { data:{ session } } = await sb.auth.getSession();
+async function bbFetch(){
+  const { data: { user } } = await sb.auth.getUser();
+  bbUser = user || null;
 
-  if(!session){
-    bbUser = null;
+  if(!bbUser){
+    bbProfile = null;
     bbDisplayName = "";
-    bbUserBadge.textContent = "";
-    bbLoginBtn.style.display = "";
-    bbLogoutBtn.style.display = "none";
+    if (bbUserBadge) bbUserBadge.textContent = "";
+    if (bbLoginBtn) bbLoginBtn.style.display = "";
+    if (bbLogoutBtn) bbLogoutBtn.style.display = "none";
     return;
   }
 
-  bbUser = session.user;
-
-  const { data: profile } = await sb
+  // prova a leggere username da profiles
+  let { data: profile, error } = await sb
     .from("profiles")
     .select("username")
     .eq("id", bbUser.id)
-    .single();
+    .maybeSingle();
 
-  bbDisplayName =
-    profile?.username ||
-    bbUser.email?.split("@")[0] ||
-    "utente";
+  // se non esiste ancora, prova a crearla (upsert)
+  if (!profile && !error) {
+    const fallback = (bbUser.user_metadata?.username) || (bbUser.email?.split("@")[0]) || "utente";
+    await sb.from("profiles").upsert({
+      id: bbUser.id,
+      username: fallback,
+      updated_at: new Date().toISOString()
+    });
+    const r = await sb.from("profiles").select("username").eq("id", bbUser.id).maybeSingle();
+    profile = r.data || null;
+  }
 
-  bbUserBadge.textContent = "Ciao, " + bbDisplayName;
-  bbLoginBtn.style.display = "none";
-  bbLogoutBtn.style.display = "";
+  bbProfile = profile || null;
+  bbDisplayName = (bbProfile?.username) ? bbProfile.username : (bbUser.email || "utente");
+
+  if (bbUserBadge) bbUserBadge.textContent = "Ciao, " + bbDisplayName;
+  if (bbLoginBtn) bbLoginBtn.style.display = "none";
+  if (bbLogoutBtn) bbLogoutBtn.style.display = "";
 }
 
-/* LOGIN / LOGOUT */
-bbLoginBtn.addEventListener("click", () => {
-  console.log("Login button clicked.");
-  window.open("./auth.html", "_self");
-});
-
-/* AUTH GUARD */
-async function requireAuth(){
-  const { data:{ session } } = await sb.auth.getSession();
+async function bbRequireAuth(){
+  const { data: { session } } = await sb.auth.getSession();
   if(!session){
-    location.href = "auth.html";
+    window.location.href = "./auth.html";
     return false;
   }
   return true;
 }
 
-/* NEW STORY */
-document.getElementById("newStoryBtn").onclick = async ()=>{
-  if(!await requireAuth()) return;
+// login/logout
+if (bbLoginBtn){
+  bbLoginBtn.addEventListener("click", ()=> window.location.href = "./auth.html");
+}
+if (bbLogoutBtn){
+  bbLogoutBtn.addEventListener("click", async ()=>{
+    await sb.auth.signOut();
+    await bbFetch();
+    alert("Logout effettuato.");
+  });
+}
 
-  await bbInit();
-  openEditor({ mode:"new" });
+// precompila alias in editor
+function bbFillAlias(){
+  const aliasInput = document.getElementById("storyAliasInput");
+  if(!aliasInput) return;
+  if(!aliasInput.value.trim()){
+    aliasInput.value = bbDisplayName || "";
+  }
+}
 
-  setTimeout(()=>{
-    const a = document.getElementById("storyAliasInput");
-    if(a && !a.value) a.value = bbDisplayName;
-  },50);
-};
+// WRAP openEditor (se esiste) -> richiede login
+if (typeof window.openEditor === "function"){
+  const _openEditor = window.openEditor;
+  window.openEditor = async function(params){
+    const ok = await bbRequireAuth();
+    if(!ok) return;
+    await bbFetch();
+    _openEditor(params);
+    setTimeout(bbFillAlias, 60);
+  };
+}
 
-/* CONTINUA STORIA */
-document.getElementById("continueBtn").onclick = async ()=>{
-  if(!await requireAuth()) return;
-
-  await bbInit();
-  openEditor({ mode:"continue", storyId: currentStoryId });
-
-  setTimeout(()=>{
-    const a = document.getElementById("storyAliasInput");
-    if(a && !a.value) a.value = bbDisplayName;
-  },50);
-};
-
-/* LISTENER */
-sb.auth.onAuthStateChange(()=> bbInit());
-bbInit();
+// init + listener
+bbFetch();
+sb.auth.onAuthStateChange(()=>bbFetch());
 </script>
+
