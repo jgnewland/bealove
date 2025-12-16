@@ -568,11 +568,7 @@
       outline:none;
       font-size:13px;
     }
-    .coverPick{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-    }
+    .coverPick{display:grid;grid-template-columns:1fr;gap:10px}
     .coverPreview{
       aspect-ratio: 3/4;
       border-radius:16px;
@@ -739,8 +735,7 @@
       <!-- ✅ CTA CON AUTH -->
       <div class="cta">
         <span id="bbUserBadge" style="color:rgba(255,255,255,.75);font-size:12px;margin-right:6px"></span>
-        <a class="btn ghost" id="bbLoginBtn" href="./auth.html">Accedi</a>
-
+        <button class="btn ghost" id="bbLoginBtn">Accedi</button>
         <button class="btn ghost" id="bbLogoutBtn" style="display:none">Logout</button>
 
         <button class="btn ghost" id="randomBtn">🎲 Random</button>
@@ -1399,12 +1394,6 @@ storyCoverClick.addEventListener("click", ()=>{
 });
 lightbox.addEventListener("click", ()=> lightbox.classList.remove("open"));
 
-/* Continue story -> open editor */
-continueBtn.addEventListener("click", ()=>{
-  if(!currentStoryId) return;
-  openEditor({mode:"continue", storyId: currentStoryId});
-});
-
 /* =========================
    PRO OVERLAY
 ========================= */
@@ -1451,12 +1440,7 @@ const sizeSel = document.getElementById("sizeSel");
 
 const clearDraftBtn = document.getElementById("clearDraft");
 
-let editorState = {
-  mode: "new",
-  storyId: null,
-  coverDataUrl: "",
-};
-
+let editorState = { mode: "new", storyId: null, coverDataUrl: "" };
 const DRAFT_KEY = "beabook_editor_draft_v1";
 
 /* Toolbar */
@@ -1608,7 +1592,7 @@ function openEditor({mode, storyId=null}){
       coverUrl.disabled = true;
       coverPreview.style.pointerEvents = "none";
       coverPreview.style.opacity = ".85";
-      coverUrl.placeholder = "Copertina bloccata (solo collaboratori/owner)";
+      coverUrl.placeholder = "Copertina bloccata";
     }
   } else {
     storyTitleInput.disabled = false;
@@ -1639,6 +1623,7 @@ function openEditor({mode, storyId=null}){
   document.body.style.overflow="hidden";
   setTimeout(()=> editable.focus(), 50);
 }
+window.openEditor = openEditor; // esponi per auth-bridge
 
 /* Close editor */
 function closeEditor(){
@@ -1655,7 +1640,7 @@ clearDraftBtn.addEventListener("click", ()=>{
   }
 });
 
-/* Publish */
+/* Publish helpers */
 function validateLines(){
   const lines = getLineCountFromText(normalizeToPlainTextWithNewlines());
   return lines <= 30;
@@ -1673,6 +1658,7 @@ function cleanHtml(html){
   return tmp.innerHTML.trim();
 }
 
+/* Publish */
 publishBtn.addEventListener("click", ()=>{
   enforceLineLimit();
   if(!validateLines()){
@@ -1741,21 +1727,28 @@ window.addEventListener("keydown", (e)=>{
   }
 });
 
-/* init */
+/* init UI */
 renderRows();
+
+/* BUTTONS -> ora usano window.openEditor (così l’auth bridge li protegge) */
+document.getElementById("newStoryBtn").addEventListener("click", ()=>{
+  window.openEditor({mode:"new"});
+});
+continueBtn.addEventListener("click", ()=>{
+  if(!currentStoryId) return;
+  window.openEditor({mode:"continue", storyId: currentStoryId});
+});
 </script>
 
-<!-- ✅ SUPABASE -->
+<!-- ✅ SUPABASE UMD (deve stare PRIMA del bridge) -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
 /* =========================
-   BEABOOK AUTH (INDEX)
+   BEABOOK AUTH (INDEX) ✅
 ========================= */
-
-// 🔥 INCOLLA QUI I TUOI DATI
 const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNqemppcHV3ZHZpb3Jxc2loc21yIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjU1NTQ0MzMsImV4cCI6MjA4MTEzMDQzM30.sLjl7lDANmdCbXCAjT5__gIVDLPPUOT5Rr5MxzdNdOM";
+const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
 
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -1763,16 +1756,18 @@ const bbUserBadge = document.getElementById("bbUserBadge");
 const bbLoginBtn  = document.getElementById("bbLoginBtn");
 const bbLogoutBtn = document.getElementById("bbLogoutBtn");
 
-let bbUser = null;
-let bbProfile = null;
 let bbDisplayName = "";
 
-async function bbFetch(){
-  const { data: { user } } = await sb.auth.getUser();
-  bbUser = user || null;
+function bbBaseDir(){
+  // directory corrente (funziona su GitHub Pages /bealove/)
+  return location.href.substring(0, location.href.lastIndexOf("/") + 1);
+}
 
-  if(!bbUser){
-    bbProfile = null;
+async function bbFetch(){
+  const { data: { session } } = await sb.auth.getSession();
+  const user = session?.user || null;
+
+  if(!user){
     bbDisplayName = "";
     if (bbUserBadge) bbUserBadge.textContent = "";
     if (bbLoginBtn) bbLoginBtn.style.display = "";
@@ -1780,27 +1775,14 @@ async function bbFetch(){
     return;
   }
 
-  // prova a leggere username da profiles
-  let { data: profile, error } = await sb
+  // prova profiles.username
+  const { data: profile } = await sb
     .from("profiles")
     .select("username")
-    .eq("id", bbUser.id)
+    .eq("id", user.id)
     .maybeSingle();
 
-  // se non esiste ancora, prova a crearla (upsert)
-  if (!profile && !error) {
-    const fallback = (bbUser.user_metadata?.username) || (bbUser.email?.split("@")[0]) || "utente";
-    await sb.from("profiles").upsert({
-      id: bbUser.id,
-      username: fallback,
-      updated_at: new Date().toISOString()
-    });
-    const r = await sb.from("profiles").select("username").eq("id", bbUser.id).maybeSingle();
-    profile = r.data || null;
-  }
-
-  bbProfile = profile || null;
-  bbDisplayName = (bbProfile?.username) ? bbProfile.username : (bbUser.email || "utente");
+  bbDisplayName = profile?.username || user.email || "utente";
 
   if (bbUserBadge) bbUserBadge.textContent = "Ciao, " + bbDisplayName;
   if (bbLoginBtn) bbLoginBtn.style.display = "none";
@@ -1810,7 +1792,7 @@ async function bbFetch(){
 async function bbRequireAuth(){
   const { data: { session } } = await sb.auth.getSession();
   if(!session){
-    window.location.href = "./auth.html";
+    location.href = bbBaseDir() + "auth.html";
     return false;
   }
   return true;
@@ -1818,7 +1800,7 @@ async function bbRequireAuth(){
 
 // login/logout
 if (bbLoginBtn){
-  bbLoginBtn.addEventListener("click", ()=> window.location.href = "./auth.html");
+  bbLoginBtn.addEventListener("click", ()=> location.href = bbBaseDir() + "auth.html");
 }
 if (bbLogoutBtn){
   bbLogoutBtn.addEventListener("click", async ()=>{
@@ -1828,16 +1810,7 @@ if (bbLogoutBtn){
   });
 }
 
-// precompila alias in editor
-function bbFillAlias(){
-  const aliasInput = document.getElementById("storyAliasInput");
-  if(!aliasInput) return;
-  if(!aliasInput.value.trim()){
-    aliasInput.value = bbDisplayName || "";
-  }
-}
-
-// WRAP openEditor (se esiste) -> richiede login
+// wrap openEditor: blocca se non loggato + precompila alias
 if (typeof window.openEditor === "function"){
   const _openEditor = window.openEditor;
   window.openEditor = async function(params){
@@ -1845,77 +1818,19 @@ if (typeof window.openEditor === "function"){
     if(!ok) return;
     await bbFetch();
     _openEditor(params);
-    setTimeout(bbFillAlias, 60);
+    setTimeout(()=>{
+      const aliasInput = document.getElementById("storyAliasInput");
+      if(aliasInput && !aliasInput.value.trim()){
+        aliasInput.value = bbDisplayName || "";
+      }
+    }, 80);
   };
 }
 
-// init + listener
+// init
 bbFetch();
 sb.auth.onAuthStateChange(()=>bbFetch());
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-<script>
-  // ✅ INCOLLA QUI I TUOI DATI
-  const SUPABASE_URL = "https://TUO-PROJECT.supabase.co";
-  const SUPABASE_ANON_KEY = "TUO_ANON_KEY";
-
-  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-  const bbUserBadge = document.getElementById("bbUserBadge");
-  const bbLoginBtn  = document.getElementById("bbLoginBtn");
-  const bbLogoutBtn = document.getElementById("bbLogoutBtn");
-
-  async function refreshAuthUI(){
-  const { data: { session } } = await sb.auth.getSession();
-  const user = session?.user || null;
-
-  if(!user){
-    bbUserBadge.textContent = "";
-    bbLoginBtn.style.display = "";
-    bbLogoutBtn.style.display = "none";
-    return;
-  }
-
-  const display = user.email || "utente";
-  bbUserBadge.textContent = "Ciao, " + display;
-  bbLoginBtn.style.display = "none";
-  bbLogoutBtn.style.display = "";
-};
-
-    if(!user){
-      if (bbUserBadge) bbUserBadge.textContent = "";
-      if (bbLoginBtn)  bbLoginBtn.style.display = "";
-      if (bbLogoutBtn) bbLogoutBtn.style.display = "none";
-      return;
-    }
-
-    const name =
-      user.user_metadata?.username ||
-      user.user_metadata?.name ||
-      (user.email ? user.email.split("@")[0] : "utente");
-
-    if (bbUserBadge) bbUserBadge.textContent = "Ciao, " + name;
-    if (bbLoginBtn)  bbLoginBtn.style.display = "none";
-    if (bbLogoutBtn) bbLogoutBtn.style.display = "";
-  }
-
-  function goLogin(){
-    // ✅ GitHub Pages: assicurati che auth.html sia nella stessa cartella di index.html
-    window.location.href = "./auth.html";
-  }
-
-  if (bbLoginBtn) bbLoginBtn.addEventListener("click", goLogin);
-
-  if (bbLogoutBtn) bbLogoutBtn.addEventListener("click", async ()=>{
-    await sb.auth.signOut();
-    await refreshAuthUI();
-  });
-
-  window.addEventListener("pageshow", () => refreshAuthUI());   // ← IMPORTANTISSIMO per Back
-document.addEventListener("visibilitychange", () => {
-  if (!document.hidden) refreshAuthUI();
-});
 </script>
 
-</script>
-
+</body>
+</html>
