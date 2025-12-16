@@ -25,23 +25,10 @@ body{
   padding:22px;
   box-shadow:0 30px 80px rgba(0,0,0,.6);
 }
-.logo{
-  display:flex;
-  justify-content:center;
-  margin-bottom:16px;
-}
-.logo img{
-  height:38px;
-}
-h1{
-  margin:0 0 14px;
-  font-size:20px;
-  text-align:center;
-}
-label{
-  font-size:12px;
-  color:rgba(255,255,255,.7);
-}
+.logo{display:flex;justify-content:center;margin-bottom:16px}
+.logo img{height:38px}
+h1{margin:0 0 14px;font-size:20px;text-align:center}
+label{font-size:12px;color:rgba(255,255,255,.7)}
 input{
   width:100%;
   margin-top:6px;
@@ -60,15 +47,8 @@ button{
   font-weight:800;
   cursor:pointer;
 }
-.primary{
-  background:linear-gradient(135deg,#B45B63,#C56A72);
-  color:#fff;
-  margin-bottom:10px;
-}
-.ghost{
-  background:rgba(255,255,255,.08);
-  color:#fff;
-}
+.primary{background:linear-gradient(135deg,#B45B63,#C56A72);color:#fff;margin-bottom:10px}
+.ghost{background:rgba(255,255,255,.08);color:#fff}
 #status{
   margin-top:14px;
   font-size:13px;
@@ -90,7 +70,6 @@ button{
 <body>
 
 <div class="card">
-
   <div class="logo">
     <img src="https://raw.githubusercontent.com/jgnewland/bealove/main/LOGO%20BEABOOK.png" alt="beabook">
   </div>
@@ -114,70 +93,95 @@ button{
 <script type="module">
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
-/* =========================
-   CONFIG — INCOLLA QUI
-========================= */
 const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
 
-const supabase = createClient(https://cjzjipuwdviorqsihsmr.supabase.co, sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O;
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-/* =========================
-   ELEMENTI
-========================= */
+async function ensureProfile(){
+  const { data: { session } } = await supabase.auth.getSession();
+  const user = session?.user;
+  if(!user) return;
+
+  const { data: profile, error } = await supabase
+    .from("profiles")
+    .select("username")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if(!profile && !error){
+    const fallback =
+      user.user_metadata?.username ||
+      (user.email ? user.email.split("@")[0] : "utente");
+
+    await supabase.from("profiles").upsert({
+      id: user.id,
+      username: fallback,
+      updated_at: new Date().toISOString()
+    });
+  }
+}
+
+
 const emailEl = document.getElementById("email");
 const passEl = document.getElementById("password");
 const statusEl = document.getElementById("status");
 
-/* =========================
-   REGISTER
-========================= */
+function setStatus(msg){ statusEl.textContent = msg; }
+
 async function register(){
-  statusEl.textContent = "Registrazione in corso…";
+  const email = emailEl.value.trim();
+  const password = passEl.value;
 
-  const { data, error } = await supabase.auth.signUp({
-    email: emailEl.value.trim(),
-    password: passEl.value
-  });
+  if(!email || !password){ setStatus("Inserisci email e password."); return; }
+
+  setStatus("Registrazione in corso…");
+
+  const { data, error } = await supabase.auth.signUp({ email, password });
 
   if(error){
-    statusEl.textContent = "Errore: " + error.message;
+    setStatus("Errore: " + error.message);
     return;
   }
 
-  statusEl.textContent = "Registrazione completata ✅";
-  setTimeout(() => {
-    window.location.href = "./index.html";
-  }, 600);
+  // Se hai email confirmation attiva, non sarà loggato subito.
+  setStatus("Registrazione OK ✅ (se richiesto, conferma l’email).");
+
+  // Se è già loggato (confirmation OFF), torna all’index
+  const { data: { session } } = await supabase.auth.getSession();
+  if(session){
+    setTimeout(()=> location.href = "./index.html", 500);
+  }
 }
 
-/* =========================
-   LOGIN
-========================= */
-async function login(){
-  statusEl.textContent = "Login in corso…";
+async function login()await ensureProfile();
+{
+  const email = emailEl.value.trim();
+  const password = passEl.value;
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email: emailEl.value.trim(),
-    password: passEl.value
-  });
+  if(!email || !password){ setStatus("Inserisci email e password."); return; }
+
+  setStatus("Login in corso…");
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
   if(error){
-    statusEl.textContent = "Errore: " + error.message;
-    return;
-  }
-
-  statusEl.textContent = "Login riuscito ✅";
-  setTimeout(() => {
-    window.location.href = "./index.html";
-  }, 400);
+  setStatus("Errore: " + error.message);
+  return;
 }
 
-/* =========================
-   EVENTS
-========================= */
+setStatus("Login riuscito ✅");
+await ensureProfile();
+setTimeout(()=> location.href = "./index.html", 350);
+
 document.getElementById("registerBtn").onclick = register;
 document.getElementById("loginBtn").onclick = login;
+
+// Se già loggato, torna all'index
+const { data: { session } } = await supabase.auth.getSession();
+if(session){
+  location.href = "./index.html";
+}
 </script>
 
 </body>
