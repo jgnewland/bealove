@@ -98,6 +98,12 @@ const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+const emailEl = document.getElementById("email");
+const passEl = document.getElementById("password");
+const statusEl = document.getElementById("status");
+
+function setStatus(msg){ statusEl.textContent = msg; }
+
 async function ensureProfile(){
   const { data: { session } } = await supabase.auth.getSession();
   const user = session?.user;
@@ -109,9 +115,9 @@ async function ensureProfile(){
     .eq("id", user.id)
     .maybeSingle();
 
+  // se non esiste, la crea
   if(!profile && !error){
-    const fallback =
-      user.user_metadata?.username ||
+    const fallback = user.user_metadata?.username ||
       (user.email ? user.email.split("@")[0] : "utente");
 
     await supabase.from("profiles").upsert({
@@ -122,67 +128,48 @@ async function ensureProfile(){
   }
 }
 
-
-const emailEl = document.getElementById("email");
-const passEl = document.getElementById("password");
-const statusEl = document.getElementById("status");
-
-function setStatus(msg){ statusEl.textContent = msg; }
-
 async function register(){
-  const email = emailEl.value.trim();
-  const password = passEl.value;
-
-  if(!email || !password){ setStatus("Inserisci email e password."); return; }
-
   setStatus("Registrazione in corso…");
 
-  const { data, error } = await supabase.auth.signUp({ email, password });
+  const { error } = await supabase.auth.signUp({
+    email: emailEl.value.trim(),
+    password: passEl.value
+  });
 
   if(error){
     setStatus("Errore: " + error.message);
     return;
   }
 
-  // Se hai email confirmation attiva, non sarà loggato subito.
-  setStatus("Registrazione OK ✅ (se richiesto, conferma l’email).");
-
-  // Se è già loggato (confirmation OFF), torna all’index
-  const { data: { session } } = await supabase.auth.getSession();
-  if(session){
-    setTimeout(()=> location.href = "./index.html", 500);
-  }
+  setStatus("Registrazione completata ✅");
+  // Nota: se hai email confirmation ON, l’utente deve confermare via mail.
+  // In quel caso il login non sarà attivo finché non conferma.
+  setTimeout(()=> location.href = "./index.html", 600);
 }
 
-async function login()await ensureProfile();
-{
-  const email = emailEl.value.trim();
-  const password = passEl.value;
-
-  if(!email || !password){ setStatus("Inserisci email e password."); return; }
-
+async function login(){
   setStatus("Login in corso…");
 
-  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  const { error } = await supabase.auth.signInWithPassword({
+    email: emailEl.value.trim(),
+    password: passEl.value
+  });
 
   if(error){
-  setStatus("Errore: " + error.message);
-  return;
+    setStatus("Errore: " + error.message);
+    return;
+  }
+
+  await ensureProfile();
+
+  setStatus("Login riuscito ✅");
+  setTimeout(()=> location.href = "./index.html", 350);
 }
 
-setStatus("Login riuscito ✅");
-await ensureProfile();
-setTimeout(()=> location.href = "./index.html", 350);
-
-document.getElementById("registerBtn").onclick = register;
-document.getElementById("loginBtn").onclick = login;
-
-// Se già loggato, torna all'index
-const { data: { session } } = await supabase.auth.getSession();
-if(session){
-  location.href = "./index.html";
-}
+document.getElementById("registerBtn").addEventListener("click", register);
+document.getElementById("loginBtn").addEventListener("click", login);
 </script>
+
 
 </body>
 </html>
