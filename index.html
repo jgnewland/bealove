@@ -2039,6 +2039,52 @@ bbFetch();
     </div>
   </div>
 </div>
+<script>
+(function(){
+  const hambBtn = document.getElementById("hambBtn");
+  const menuOverlay = document.getElementById("menuOverlay");
+  const menuClose = document.getElementById("menuClose");
+
+  if(!hambBtn || !menuOverlay || !menuClose){
+    console.warn("Hamburger wiring: elementi mancanti", { hambBtn, menuOverlay, menuClose });
+    return;
+  }
+
+  function openMenu(e){
+    if(e) e.preventDefault();
+    menuOverlay.classList.add("open");
+    menuOverlay.setAttribute("aria-hidden","false");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeMenu(e){
+    if(e) e.preventDefault();
+    menuOverlay.classList.remove("open");
+    menuOverlay.setAttribute("aria-hidden","true");
+    document.body.style.overflow = "";
+  }
+
+  // iPhone: meglio ascoltare anche touchstart
+  hambBtn.addEventListener("click", openMenu);
+  hambBtn.addEventListener("touchstart", openMenu, { passive: false });
+
+  menuClose.addEventListener("click", closeMenu);
+  menuClose.addEventListener("touchstart", closeMenu, { passive: false });
+
+  menuOverlay.addEventListener("click", (e)=>{
+    if(e.target === menuOverlay) closeMenu(e);
+  });
+
+  menuOverlay.querySelectorAll('a[href^="#"]').forEach(a=>{
+    a.addEventListener("click", closeMenu);
+    a.addEventListener("touchstart", closeMenu, { passive: false });
+  });
+
+  window.addEventListener("keydown", (e)=>{
+    if(e.key === "Escape" && menuOverlay.classList.contains("open")) closeMenu(e);
+  });
+})();
+</script>
 
 </body>
 </html>
