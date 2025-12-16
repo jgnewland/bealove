@@ -1745,8 +1745,9 @@ continueBtn.addEventListener("click", ()=>{
 
 <script>
 /* =========================
-   BEABOOK AUTH (INDEX) ✅
+   BEABOOK AUTH (INDEX) — FIX SESSION
 ========================= */
+
 const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
 
@@ -1756,43 +1757,72 @@ const bbUserBadge = document.getElementById("bbUserBadge");
 const bbLoginBtn  = document.getElementById("bbLoginBtn");
 const bbLogoutBtn = document.getElementById("bbLogoutBtn");
 
+let bbUser = null;
 let bbDisplayName = "";
 
-function bbBaseDir(){
-  // directory corrente (funziona su GitHub Pages /bealove/)
-  return location.href.substring(0, location.href.lastIndexOf("/") + 1);
+function bbRenderLoggedOut(){
+  bbUser = null;
+  bbDisplayName = "";
+  if (bbUserBadge) bbUserBadge.textContent = "";
+  if (bbLoginBtn)  bbLoginBtn.style.display = "";
+  if (bbLogoutBtn) bbLogoutBtn.style.display = "none";
 }
 
-async function bbFetch(){
-  const { data: { session } } = await sb.auth.getSession();
-  const user = session?.user || null;
+function bbRenderLoggedIn(){
+  if (bbUserBadge) bbUserBadge.textContent = "Ciao, " + bbDisplayName;
+  if (bbLoginBtn)  bbLoginBtn.style.display = "none";
+  if (bbLogoutBtn) bbLogoutBtn.style.display = "";
+}
 
-  if(!user){
-    bbDisplayName = "";
-    if (bbUserBadge) bbUserBadge.textContent = "";
-    if (bbLoginBtn) bbLoginBtn.style.display = "";
-    if (bbLogoutBtn) bbLogoutBtn.style.display = "none";
-    return;
-  }
-
-  // prova profiles.username
-  const { data: profile } = await sb
+async function bbEnsureProfile(user){
+  // prova a leggere username da profiles
+  const { data: profile, error } = await sb
     .from("profiles")
     .select("username")
     .eq("id", user.id)
     .maybeSingle();
 
+  // se non esiste, creala
+  if (!profile && !error){
+    const fallback =
+      user.user_metadata?.username ||
+      (user.email ? user.email.split("@")[0] : "utente");
+
+    await sb.from("profiles").upsert({
+      id: user.id,
+      username: fallback,
+      updated_at: new Date().toISOString()
+    });
+
+    const r = await sb.from("profiles").select("username").eq("id", user.id).maybeSingle();
+    return r.data || null;
+  }
+
+  return profile || null;
+}
+
+async function bbFetch(){
+  // ✅ usa getSession (molto più affidabile su pagine statiche)
+  const { data: { session } } = await sb.auth.getSession();
+  const user = session?.user || null;
+
+  if(!user){
+    bbRenderLoggedOut();
+    return;
+  }
+
+  bbUser = user;
+
+  const profile = await bbEnsureProfile(user);
   bbDisplayName = profile?.username || user.email || "utente";
 
-  if (bbUserBadge) bbUserBadge.textContent = "Ciao, " + bbDisplayName;
-  if (bbLoginBtn) bbLoginBtn.style.display = "none";
-  if (bbLogoutBtn) bbLogoutBtn.style.display = "";
+  bbRenderLoggedIn();
 }
 
 async function bbRequireAuth(){
   const { data: { session } } = await sb.auth.getSession();
   if(!session){
-    location.href = bbBaseDir() + "auth.html";
+    window.location.href = "./auth.html";
     return false;
   }
   return true;
@@ -1800,7 +1830,7 @@ async function bbRequireAuth(){
 
 // login/logout
 if (bbLoginBtn){
-  bbLoginBtn.addEventListener("click", ()=> location.href = bbBaseDir() + "auth.html");
+  bbLoginBtn.addEventListener("click", ()=> window.location.href = "./auth.html");
 }
 if (bbLogoutBtn){
   bbLogoutBtn.addEventListener("click", async ()=>{
@@ -1810,27 +1840,16 @@ if (bbLogoutBtn){
   });
 }
 
-// wrap openEditor: blocca se non loggato + precompila alias
-if (typeof window.openEditor === "function"){
-  const _openEditor = window.openEditor;
-  window.openEditor = async function(params){
-    const ok = await bbRequireAuth();
-    if(!ok) return;
-    await bbFetch();
-    _openEditor(params);
-    setTimeout(()=>{
-      const aliasInput = document.getElementById("storyAliasInput");
-      if(aliasInput && !aliasInput.value.trim()){
-        aliasInput.value = bbDisplayName || "";
-      }
-    }, 80);
-  };
-}
+// ✅ importantissimo: usa event + session
+sb.auth.onAuthStateChange((event, session)=>{
+  // quando torni da auth.html, qui arriva SIGNED_IN
+  bbFetch();
+});
 
 // init
 bbFetch();
-sb.auth.onAuthStateChange(()=>bbFetch());
 </script>
+
 
 </body>
 </html>
