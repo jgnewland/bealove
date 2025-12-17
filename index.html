@@ -2112,7 +2112,16 @@ if (bbLogoutBtn){
 
 // ✅ Quando cambia lo stato auth, aggiorna badge + prova a caricare storie
 sb.auth.onAuthStateChange((event, session)=>{
+  bbFetch(); // ✅ quando torni indietro (bfcache mobile) ricalcola sessione e badge
+window.addEventListener("pageshow", () => {
   bbFetch();
+});
+
+// ✅ quando riapri la tab o torni in foreground
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) bbFetch();
+});
+
   if(event === "SIGNED_IN" || event === "INITIAL_SESSION"){
     bbLoadStoriesFromDB();
   }
