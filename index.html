@@ -1268,7 +1268,31 @@ function loadStories(){
 function saveStories(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stories));
 }
-let stories = loadStories();
+let stories = loadStories();// =========================
+// APPLY STORIES FROM SUPABASE
+// =========================
+window.bbApplyStories = function (remoteStories) {
+  if (!Array.isArray(remoteStories)) {
+    console.warn("bbApplyStories: dati non validi");
+    return;
+  }
+
+  // sostituisce le storie locali con quelle remote
+  stories = remoteStories.map(s => ({
+    id: s.id,
+    title: s.title,
+    genre: s.genre,
+    author: s.author,
+    cover: s.cover,
+    incipitHtml: s.incipit_html,
+    chapters: s.chapters || [],
+    createdAt: new Date(s.created_at).getTime()
+  }));
+
+  saveStories();     // cache locale
+  renderRows();      // RIDISEGNA TUTTO IL SITO
+};
+
 
 /* =========================
    HELPERS
