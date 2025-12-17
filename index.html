@@ -706,13 +706,10 @@
     /* =========================
        HAMBURGER MENU (MOBILE)
     ========================= */
-
-    /* Desktop: nav su una riga */
     .topbar-inner{ flex-wrap: nowrap; }
     .nav{ flex-wrap: nowrap; white-space: nowrap; }
     .nav a{ white-space: nowrap; }
 
-    /* Mobile: nascondi nav e mostra hamburger */
     @media (max-width: 820px){
       .nav{ display:none !important; }
       #hambBtn{ display:inline-flex !important; align-items:center; justify-content:center; }
@@ -721,7 +718,6 @@
     /* =========================
        MOBILE FIX (TOPBAR + SEARCH + CTA)
     ========================= */
-
     html, body { overflow-x: hidden; }
 
     @media (max-width: 820px){
@@ -1188,7 +1184,27 @@
     </div>
   </div>
 
-<script>
+  <!-- ✅ MOBILE MENU OVERLAY (FUORI dagli script) -->
+  <div class="overlay" id="menuOverlay" aria-hidden="true">
+    <div class="sheet" style="max-width:520px;margin:0 auto;inset:12px;position:absolute;left:0;right:0;top:12px;bottom:auto;">
+      <div class="sheet-top">
+        <button class="back" id="menuClose">← Chiudi</button>
+        <div class="sheet-title">Menu</div>
+        <span></span>
+      </div>
+
+      <div style="padding:14px">
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <a class="toolbtn" href="#home">Home</a>
+          <a class="toolbtn" href="#featured">In evidenza</a>
+          <a class="toolbtn" href="#new">Nuove</a>
+          <a class="toolbtn" href="#loved">Più amate</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
 /* =========================
    STORAGE + SEED
 ========================= */
@@ -1268,31 +1284,20 @@ function loadStories(){
 function saveStories(){
   localStorage.setItem(STORAGE_KEY, JSON.stringify(stories));
 }
-let stories = loadStories();// =========================
-// APPLY STORIES FROM SUPABASE
-// =========================
+let stories = loadStories();
+
+/* =========================
+   APPLY STORIES FROM SUPABASE (UNICA)
+========================= */
 window.bbApplyStories = function (remoteStories) {
-  if (!Array.isArray(remoteStories)) {
-    console.warn("bbApplyStories: dati non validi");
+  if (!Array.isArray(remoteStories) || remoteStories.length === 0) {
+    console.warn("bbApplyStories: lista vuota, tengo le storie locali");
     return;
   }
-
-  // sostituisce le storie locali con quelle remote
-  stories = remoteStories.map(s => ({
-    id: s.id,
-    title: s.title,
-    genre: s.genre,
-    author: s.author,
-    cover: s.cover,
-    incipitHtml: s.incipit_html,
-    chapters: s.chapters || [],
-    createdAt: new Date(s.created_at).getTime()
-  }));
-
-  saveStories();     // cache locale
-  renderRows();      // RIDISEGNA TUTTO IL SITO
+  stories = remoteStories;
+  try { saveStories(); } catch(e){}
+  renderRows();
 };
-
 
 /* =========================
    HELPERS
@@ -1380,7 +1385,6 @@ function setFeatured(story){
 }
 
 function renderRows(list = stories){
-  // ✅ SAFE: se non ci sono storie, non deve rompersi niente
   if(!Array.isArray(list) || list.length === 0){
     rowFeatured.innerHTML = `<div style="color:rgba(255,255,255,.7);padding:10px">Nessuna storia ancora.</div>`;
     rowNew.innerHTML      = `<div style="color:rgba(255,255,255,.7);padding:10px">Nessuna storia ancora.</div>`;
@@ -1410,7 +1414,6 @@ function renderRows(list = stories){
   applyCoverBackgrounds();
   setFeatured(featured[0] || list[0]);
 }
-
 
 featuredClickable.addEventListener("click", ()=>{ if(featuredId) openStory(featuredId); });
 
@@ -1469,8 +1472,7 @@ document.getElementById("openProBtn").addEventListener("click", ()=> openPro());
 document.getElementById("proCtaBtn").addEventListener("click", ()=> openPro());
 
 /* =========================
-   ✅ HAMBURGER MENU (UNICO, PULITO)
-   apre/chiude #menuOverlay
+   ✅ HAMBURGER MENU
 ========================= */
 const hambBtn = document.getElementById("hambBtn");
 const menuOverlay = document.getElementById("menuOverlay");
@@ -1849,7 +1851,7 @@ function openEditor({mode, storyId=null}){
   document.body.style.overflow="hidden";
   setTimeout(()=> editable.focus(), 50);
 }
-window.openEditor = openEditor; // esponi per auth-bridge
+window.openEditor = openEditor;
 
 /* Close editor */
 function closeEditor(){
@@ -1955,19 +1957,8 @@ window.addEventListener("keydown", (e)=>{
 
 /* init UI */
 renderRows();
-// ✅ Supabase potrà “iniettare” storie qui dentro
-window.bbApplyStories = function(newStories){
-  if(Array.isArray(newStories) && newStories.length){
-    stories = newStories;
-    try { saveStories(); } catch(e){}
-    renderRows();
-  } else {
-    console.warn("bbApplyStories: lista vuota, tengo le storie locali");
-  }
-};
 
-
-/* BUTTONS -> ora usano window.openEditor (così l’auth bridge li protegge) */
+/* BUTTONS */
 document.getElementById("newStoryBtn").addEventListener("click", ()=>{
   window.openEditor({mode:"new"});
 });
@@ -1975,16 +1966,15 @@ continueBtn.addEventListener("click", ()=>{
   if(!currentStoryId) return;
   window.openEditor({mode:"continue", storyId: currentStoryId});
 });
-</script>
+  </script>
 
-<!-- ✅ SUPABASE UMD (deve stare PRIMA del bridge) -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- ✅ SUPABASE UMD -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<script>
+  <script>
 /* =========================
    BEABOOK AUTH (INDEX) — FIX SESSION
 ========================= */
-
 const SUPABASE_URL = "https://cjzjipuwdviorqsihsmr.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_GTdIzH-9DAlh39wyKfPIZA_rtxwek0O";
 
@@ -2036,7 +2026,6 @@ async function bbEnsureProfile(user){
   return profile || null;
 }
 
-<script>
 async function bbFetch(){
   const { data: { session } } = await sb.auth.getSession();
   const user = session?.user || null;
@@ -2056,12 +2045,9 @@ async function bbFetch(){
 
 /* =========================
    LOAD STORIES FROM SUPABASE
-   (chiama window.bbApplyStories([...]) se esiste)
 ========================= */
 async function bbLoadStoriesFromDB(){
   try{
-    // ⚠️ Qui devi avere una tabella (es: "stories") con almeno:
-    // id, title, genre, author, cover, incipit_html, chapters_json, created_at
     const { data, error } = await sb
       .from("stories")
       .select("*")
@@ -2076,7 +2062,6 @@ async function bbLoadStoriesFromDB(){
       return;
     }
 
-    // Mappa verso il formato che usa il tuo sito
     const mapped = data.map(row => ({
       id: row.id,
       title: row.title || "",
@@ -2090,15 +2075,13 @@ async function bbLoadStoriesFromDB(){
 
     if(typeof window.bbApplyStories === "function"){
       window.bbApplyStories(mapped);
-    }else{
-      console.warn("bbApplyStories non trovato: aggiungilo nel primo script (quello lungo).");
     }
   }catch(e){
     console.warn("bbLoadStoriesFromDB exception:", e);
   }
 }
 
-// login/logout
+// login/logout (manteniamo anche l'onclick che hai già messo)
 if (bbLoginBtn){
   bbLoginBtn.addEventListener("click", ()=> window.location.href = "./auth.html");
 }
@@ -2110,18 +2093,17 @@ if (bbLogoutBtn){
   });
 }
 
-// ✅ Quando cambia lo stato auth, aggiorna badge + prova a caricare storie
-sb.auth.onAuthStateChange((event, session)=>{
-  bbFetch(); // ✅ quando torni indietro (bfcache mobile) ricalcola sessione e badge
+// ✅ Fix “torno indietro e non vedo più Ciao”
 window.addEventListener("pageshow", () => {
   bbFetch();
 });
-
-// ✅ quando riapri la tab o torni in foreground
 document.addEventListener("visibilitychange", () => {
   if (!document.hidden) bbFetch();
 });
 
+// auth change
+sb.auth.onAuthStateChange((event)=>{
+  bbFetch();
   if(event === "SIGNED_IN" || event === "INITIAL_SESSION"){
     bbLoadStoriesFromDB();
   }
@@ -2130,26 +2112,7 @@ document.addEventListener("visibilitychange", () => {
 // init
 bbFetch();
 bbLoadStoriesFromDB();
-<!-- MOBILE MENU OVERLAY -->
-<div class="overlay" id="menuOverlay" aria-hidden="true">
-  <div class="sheet" style="max-width:520px;margin:0 auto;inset:12px;position:absolute;left:0;right:0;top:12px;bottom:auto;">
-    <div class="sheet-top">
-      <button class="back" id="menuClose">← Chiudi</button>
-      <div class="sheet-title">Menu</div>
-      <span></span>
-    </div>
-
-    <div style="padding:14px">
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <a class="toolbtn" href="#home">Home</a>
-        <a class="toolbtn" href="#featured">In evidenza</a>
-        <a class="toolbtn" href="#new">Nuove</a>
-        <a class="toolbtn" href="#loved">Più amate</a>
-      </div>
-    </div>
-  </div>
-</div>
-</script>
+  </script>
 
 </body>
 </html>
