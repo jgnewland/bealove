@@ -86,7 +86,7 @@
       border-radius:999px;
       box-shadow: 0 14px 40px rgba(0,0,0,.35);
       position:relative;
-      min-width:220px;
+      min-width:0px;
     }
     .search input{
       width:100%;
@@ -855,6 +855,37 @@
       .stat{ font-size:10.5px; }
       .btn{ padding:9px 12px; font-size:12px; }
       .back{ padding:8px 10px; }
+      /* =========================================
+   FIX DEFINITIVO TOPBAR – BOTTONI SU 1 RIGA
+   (INCOLLARE QUI, ALLA FINE DELLO <style>)
+========================================= */
+
+.topbar-inner{
+  flex-wrap: nowrap !important;
+}
+
+/* la search DEVE potersi restringere */
+.search{
+  flex: 1 1 320px !important;
+  min-width: 0 !important;
+}
+
+/* CTA non deve mai andare a capo */
+.cta{
+  flex: 0 0 auto !important;
+  flex-wrap: nowrap !important;
+  white-space: nowrap !important;
+}
+
+/* bottoni mai su due righe */
+.cta .btn,
+#randomBtn,
+#newStoryBtn{
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+  min-width: max-content !important;
+}
+
     }
   </style>
 </head>
