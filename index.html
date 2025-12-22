@@ -761,26 +761,30 @@
       }
     }
 
+    /* ✅ QUI IL TUO BLOCCO 420px ERA ROTTO: ORA È CHIUSO CORRETTAMENTE */
     @media (max-width: 420px){
       .topbar-inner{ padding:10px 12px; }
+
       .btn{
-  border:none; cursor:pointer;
-  border-radius:999px;
-  padding:10px 14px;
-  font-size:13px;
-  font-weight:800;
-  color:#0e0e10;
-  background: linear-gradient(135deg, #fff, rgba(255,255,255,.85));
-  box-shadow: 0 18px 55px rgba(0,0,0,.35);
+        border:none; cursor:pointer;
+        border-radius:999px;
+        padding:10px 14px;
+        font-size:13px;
+        font-weight:800;
+        color:#0e0e10;
+        background: linear-gradient(135deg, #fff, rgba(255,255,255,.85));
+        box-shadow: 0 18px 55px rgba(0,0,0,.35);
 
-  white-space: nowrap;   /* ✅ non andare a capo */
-  flex: 0 0 auto;        /* ✅ non schiacciare il bottone */
-}
-.cta{ flex: 0 0 auto; }
+        white-space: nowrap;   /* ✅ non andare a capo */
+        flex: 0 0 auto;        /* ✅ non schiacciare il bottone */
+      }
 
+      .cta{ flex: 0 0 auto; }
+    }
 
     /* =========================
        MOBILE COMPACT LAYOUT
+       (ERA ANNIDATO MA NON SI PUÒ)
     ========================= */
     @media (max-width: 820px){
       .wrap{ padding:0 12px 32px; }
@@ -855,37 +859,30 @@
       .stat{ font-size:10.5px; }
       .btn{ padding:9px 12px; font-size:12px; }
       .back{ padding:8px 10px; }
-      /* =========================================
-   FIX DEFINITIVO TOPBAR – BOTTONI SU 1 RIGA
-   (INCOLLARE QUI, ALLA FINE DELLO <style>)
-========================================= */
+    }
 
-.topbar-inner{
-  flex-wrap: nowrap !important;
-}
-
-/* la search DEVE potersi restringere */
-.search{
-  flex: 1 1 320px !important;
-  min-width: 0 !important;
-}
-
-/* CTA non deve mai andare a capo */
-.cta{
-  flex: 0 0 auto !important;
-  flex-wrap: nowrap !important;
-  white-space: nowrap !important;
-}
-
-/* bottoni mai su due righe */
-.cta .btn,
-#randomBtn,
-#newStoryBtn{
-  flex: 0 0 auto !important;
-  white-space: nowrap !important;
-  min-width: max-content !important;
-}
-
+    /* =========================================
+       FIX DEFINITIVO TOPBAR – BOTTONI SU 1 RIGA
+       (IL TUO BLOCCO ORA È VALIDO)
+    ========================================= */
+    .topbar-inner{
+      flex-wrap: nowrap !important;
+    }
+    .search{
+      flex: 1 1 320px !important;
+      min-width: 0 !important;
+    }
+    .cta{
+      flex: 0 0 auto !important;
+      flex-wrap: nowrap !important;
+      white-space: nowrap !important;
+    }
+    .cta .btn,
+    #randomBtn,
+    #newStoryBtn{
+      flex: 0 0 auto !important;
+      white-space: nowrap !important;
+      min-width: max-content !important;
     }
   </style>
 </head>
@@ -1228,7 +1225,7 @@
     </div>
   </div>
 
-  <!-- ✅ MOBILE MENU OVERLAY (FUORI dagli script) -->
+  <!-- ✅ MOBILE MENU OVERLAY -->
   <div class="overlay" id="menuOverlay" aria-hidden="true">
     <div class="sheet" style="max-width:520px;margin:0 auto;inset:12px;position:absolute;left:0;right:0;top:12px;bottom:auto;">
       <div class="sheet-top">
@@ -1335,11 +1332,24 @@ let stories = loadStories();
 ========================= */
 window.bbApplyStories = function (remoteStories) {
   if (!Array.isArray(remoteStories) || remoteStories.length === 0) {
-    console.warn("bbApplyStories: lista vuota, tengo le storie locali");
+    console.warn("Supabase vuoto: mantengo storie locali");
     return;
   }
-  stories = remoteStories;
+
+  const map = new Map();
+
+  // 1) storie locali
+  stories.forEach(s => map.set(s.id, s));
+
+  // 2) storie dal DB (sovrascrivono solo se stesso id)
+  remoteStories.forEach(s => map.set(s.id, s));
+
+  // 3) ricostruisci array
+  stories = Array.from(map.values());
+
   try { saveStories(); } catch(e){}
+
+  console.log("Storie finali:", stories.length);
   renderRows();
 };
 
